@@ -30,7 +30,7 @@ public class UserController {
     private final UserService userService;
 
     /**
-     * 根据用户名查找用户信息
+     * 根据用户名查找用户信
      */
     @GetMapping("/api/answerly/v1/user/{username}")
     public Result<UserRespDTO> getUserByUsername(@PathVariable("username") String username) {

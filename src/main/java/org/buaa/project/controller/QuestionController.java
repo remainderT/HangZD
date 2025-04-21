@@ -3,6 +3,7 @@ package org.buaa.project.controller;
 import lombok.RequiredArgsConstructor;
 import org.buaa.project.common.convention.result.Result;
 import org.buaa.project.common.convention.result.Results;
+import org.buaa.project.dto.req.question.QuestionSolveReqDTO;
 import org.buaa.project.dto.req.question.QuestionUpdateReqDTO;
 import org.buaa.project.dto.req.question.QuestionUploadReqDTO;
 import org.buaa.project.service.QuestionService;
@@ -46,6 +47,15 @@ public class QuestionController {
     @DeleteMapping("/api/astroq/question")
     public Result<Void> deleteQuestion(@RequestParam("id") Long Id) {
         questionService.deleteQuestion(Id);
+        return Results.success();
+    }
+
+    /**
+     * 标记问题已经解决
+     */
+    @PostMapping("/api/astroq/question/solve")
+    public Result<Void> resolvedQuestion(@RequestBody QuestionSolveReqDTO requestParam) {
+        questionService.resolvedQuestion(requestParam);
         return Results.success();
     }
 }
