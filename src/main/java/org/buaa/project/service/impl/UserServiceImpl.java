@@ -148,7 +148,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
 
     @Override
     public UserLoginRespDTO login(UserLoginReqDTO requestParam, ServletRequest request) {
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
+        //验证码还没搞
+        /*HttpServletRequest httpRequest = (HttpServletRequest) request;
         Cookie[] cookies = httpRequest.getCookies();
         String captchaOwner = "";
         if (cookies != null) {
@@ -163,7 +164,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
         if (StrUtil.isBlank(code) || !code.equalsIgnoreCase(requestParam.getCode())) {
             throw new ClientException(USER_LOGIN_CAPTCHA_ERROR);
         }
-
+*/
         if (!hasUsername(requestParam.getUsername())) {
             throw new ClientException(USER_NAME_NULL);
         }
@@ -211,10 +212,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
 
     @Override
     public void update(UserUpdateReqDTO requestParam) {
-        if (!Objects.equals(requestParam.getOldUsername(), UserContext.getUsername())) {
+        if (!Objects.equals(requestParam.getUsername(), UserContext.getUsername())) {
             throw new ClientException(USER_UPDATE_ERROR);
         }
-        if (!requestParam.getOldUsername().equals(requestParam.getNewUsername()) && hasUsername(requestParam.getNewUsername())) {
+        if (!requestParam.getUsername().equals(requestParam.getNewUsername()) && hasUsername(requestParam.getNewUsername())) {
             throw new ClientException(USER_NAME_EXIST);
         }
         String password = DigestUtils.md5DigestAsHex((requestParam.getPassword() + UserContext.getSalt()).getBytes());
@@ -226,13 +227,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
                         .introduction(requestParam.getIntroduction())
                         .build();
         LambdaUpdateWrapper<UserDO> updateWrapper = Wrappers.lambdaUpdate(UserDO.class)
-            .eq(UserDO::getUsername, requestParam.getOldUsername());
+            .eq(UserDO::getUsername, requestParam.getUsername());
         baseMapper.update(userDO, updateWrapper);
         /**
          * 更新redis缓存
          */
-        if (!requestParam.getOldUsername().equals(requestParam.getNewUsername())) {
-            stringRedisTemplate.delete(USER_INFO_KEY + requestParam.getOldUsername());
+        if (!requestParam.getUsername().equals(requestParam.getNewUsername())) {
+            stringRedisTemplate.delete(USER_INFO_KEY + requestParam.getUsername());
             stringRedisTemplate.opsForValue().set(USER_LOGIN_KEY + requestParam.getNewUsername(), UserContext.getToken(), USER_LOGIN_EXPIRE_KEY, TimeUnit.DAYS);
         }
         UserDO newUserDO = baseMapper.selectOne(Wrappers.lambdaQuery(UserDO.class)

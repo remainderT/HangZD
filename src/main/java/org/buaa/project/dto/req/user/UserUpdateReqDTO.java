@@ -11,8 +11,13 @@ public class UserUpdateReqDTO {
     /**
      * 旧用户名
      */
-    private String oldUsername;
+    private String username;
+    /**
+     *
+     * token
+     */
 
+    private String token;
     /**
      * 新用户名
      */
