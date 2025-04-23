@@ -14,6 +14,10 @@ public class RedisCacheConstants {
      * 用户注册验证码缓存
      */
     public static final String USER_REGISTER_CODE_KEY = "astroq:user:register:code:";
+    /**
+     * 用户注册验证码发送计时
+     */
+    public static final String USER_CODE_TO_FREQUENT = "astroq:user:register:frequent:";
 
     /**
      * 用户注册验证码缓存过期时间

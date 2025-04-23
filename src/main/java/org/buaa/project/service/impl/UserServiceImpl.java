@@ -42,23 +42,9 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import static org.buaa.project.common.consts.MailSendConstants.EMAIL_SUFFIX;
-import static org.buaa.project.common.consts.RedisCacheConstants.USER_INFO_KEY;
-import static org.buaa.project.common.consts.RedisCacheConstants.USER_LOGIN_CAPTCHA_KEY;
-import static org.buaa.project.common.consts.RedisCacheConstants.USER_LOGIN_EXPIRE_KEY;
-import static org.buaa.project.common.consts.RedisCacheConstants.USER_LOGIN_KEY;
-import static org.buaa.project.common.consts.RedisCacheConstants.USER_REGISTER_CODE_EXPIRE_KEY;
-import static org.buaa.project.common.consts.RedisCacheConstants.USER_REGISTER_CODE_KEY;
-import static org.buaa.project.common.consts.RedisCacheConstants.USER_REGISTER_LOCK_KEY;
+import static org.buaa.project.common.consts.RedisCacheConstants.*;
 import static org.buaa.project.common.enums.ServiceErrorCodeEnum.MAIL_SEND_ERROR;
-import static org.buaa.project.common.enums.UserErrorCodeEnum.USER_CODE_ERROR;
-import static org.buaa.project.common.enums.UserErrorCodeEnum.USER_EXIST;
-import static org.buaa.project.common.enums.UserErrorCodeEnum.USER_LOGIN_CAPTCHA_ERROR;
-import static org.buaa.project.common.enums.UserErrorCodeEnum.USER_NAME_EXIST;
-import static org.buaa.project.common.enums.UserErrorCodeEnum.USER_NAME_NULL;
-import static org.buaa.project.common.enums.UserErrorCodeEnum.USER_PASSWORD_ERROR;
-import static org.buaa.project.common.enums.UserErrorCodeEnum.USER_SAVE_ERROR;
-import static org.buaa.project.common.enums.UserErrorCodeEnum.USER_TOKEN_NULL;
-import static org.buaa.project.common.enums.UserErrorCodeEnum.USER_UPDATE_ERROR;
+import static org.buaa.project.common.enums.UserErrorCodeEnum.*;
 
 /**
  * 用户接口实现层
@@ -99,6 +85,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
 
     @Override
     public Boolean sendCode(String mail) {
+        String emailkey = mail.replace(EMAIL_SUFFIX,"");
+        String frequentKey = USER_CODE_TO_FREQUENT+ emailkey;
+        Boolean acquired = stringRedisTemplate.opsForValue()
+                .setIfAbsent(frequentKey, "1", 1, TimeUnit.MINUTES);
+        if(Boolean.FALSE.equals(acquired)) {
+            throw new ClientException(UserErrorCodeEnum.USER_CODE_TOO_FREQUENT);
+        }
         SimpleMailMessage message = new SimpleMailMessage();
         String code = RandomGenerator.generateSixDigitCode();
         message.setFrom(from);
@@ -134,7 +127,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
             UserDO userDO = BeanUtil.toBean(requestParam, UserDO.class);
             userDO.setSalt(UUID.randomUUID().toString().substring(0, 5));
             userDO.setPassword(DigestUtils.md5DigestAsHex((userDO.getPassword() + userDO.getSalt()).getBytes()));
-            int inserted = baseMapper.insert(userDO);
+            int inserted = -1;
+            try {
+                inserted = baseMapper.insert(userDO);
+            } catch (Exception e){
+              throw new ClientException(USER_INVALID_DATA);
+            }
             if (inserted < 1) {
                 throw new ClientException(USER_SAVE_ERROR);
             }

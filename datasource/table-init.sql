@@ -8,7 +8,7 @@ CREATE TABLE `user` (
                         `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
                         `username`      varchar(256) NOT NULL COMMENT '用户名',
                         `password`      varchar(512) NOT NULL COMMENT '密码',
-                        `mail`          varchar(20)  NOT NULL COMMENT '邮箱',
+                        `mail`          varchar(64)  NOT NULL COMMENT '邮箱',
                         `salt`          varchar(20)  NOT NULL COMMENT '盐',
                         `avatar`        varchar(60)     DEFAULT NULL COMMENT '头像',
                         `phone`         varchar(20)     DEFAULT NULL COMMENT '手机号',

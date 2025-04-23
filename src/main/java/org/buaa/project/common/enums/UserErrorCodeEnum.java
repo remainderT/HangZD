@@ -33,6 +33,10 @@ public enum UserErrorCodeEnum implements IErrorCode {
 
     USER_CODE_ERROR("A000104", "验证码错误"),
 
+    USER_CODE_TOO_FREQUENT("A000105", "验证码发送过于频繁"),
+
+    USER_INVALID_DATA("A000106", "用户数据不合法"),
+
     USER_NAME_NULL("A000201", "用户名不存在"),
 
     USER_PASSWORD_ERROR("A000202", "密码错误"),
