@@ -31,9 +31,6 @@ LoginCheckFilter implements Filter {
             "/api/answerly/v1/user/login", //登录
             "/api/answerly/v1/user/send-code", //注册时发送验证码
             "/api/answerly/v1/user/captcha" //登录时获取验证码
-            //,"/api/answerly/v1/user/check-login"
-            //,"/api/answerly/v1/user/logout"
-            //,"/api/answerly/v1/user"
     );
 
     private boolean requireLogin(String URI, String method) {

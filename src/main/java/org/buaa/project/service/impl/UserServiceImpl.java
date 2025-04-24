@@ -212,10 +212,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
 
     @Override
     public void update(UserUpdateReqDTO requestParam) {
-        if (!Objects.equals(requestParam.getUsername(), UserContext.getUsername())) {
+        if (!Objects.equals(requestParam.getOldUsername(), UserContext.getUsername())) {
             throw new ClientException(USER_UPDATE_ERROR);
         }
-        if (!requestParam.getUsername().equals(requestParam.getNewUsername()) && hasUsername(requestParam.getNewUsername())) {
+        if (!requestParam.getOldUsername().equals(requestParam.getNewUsername()) && hasUsername(requestParam.getNewUsername())) {
             throw new ClientException(USER_NAME_EXIST);
         }
         String password = DigestUtils.md5DigestAsHex((requestParam.getPassword() + UserContext.getSalt()).getBytes());
@@ -227,18 +227,154 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
                         .introduction(requestParam.getIntroduction())
                         .build();
         LambdaUpdateWrapper<UserDO> updateWrapper = Wrappers.lambdaUpdate(UserDO.class)
-            .eq(UserDO::getUsername, requestParam.getUsername());
+            .eq(UserDO::getUsername, requestParam.getOldUsername());
         baseMapper.update(userDO, updateWrapper);
         /**
          * 更新redis缓存
          */
-        if (!requestParam.getUsername().equals(requestParam.getNewUsername())) {
-            stringRedisTemplate.delete(USER_INFO_KEY + requestParam.getUsername());
+        if (!requestParam.getOldUsername().equals(requestParam.getNewUsername())) {
+            stringRedisTemplate.delete(USER_INFO_KEY + requestParam.getOldUsername());
             stringRedisTemplate.opsForValue().set(USER_LOGIN_KEY + requestParam.getNewUsername(), UserContext.getToken(), USER_LOGIN_EXPIRE_KEY, TimeUnit.DAYS);
         }
         UserDO newUserDO = baseMapper.selectOne(Wrappers.lambdaQuery(UserDO.class)
                 .eq(UserDO::getUsername, requestParam.getNewUsername()));
         stringRedisTemplate.opsForValue().set(USER_INFO_KEY + requestParam.getNewUsername(), JSON.toJSONString(newUserDO));
+    }
+
+    @Override
+    public void likeUser(String username, Integer increment) {
+        if (increment == null || increment < 0) {
+            throw new ClientException(USER_INVALID_DATA);
+        }
+        if (!hasUsername(username)) {
+            throw new ClientException(USER_NAME_NULL);
+        }
+        LambdaQueryWrapper<UserDO> queryWrapper = Wrappers.lambdaQuery(UserDO.class)
+                .eq(UserDO::getUsername, username);
+        UserDO userDO = baseMapper.selectOne(queryWrapper);
+        if (userDO == null ) {
+            throw new ClientException(USER_NULL);
+        } else if(userDO.getLikeCount() == null || userDO.getLikeCount() < 0) {
+            throw new ClientException(USER_INVALID_DATA);
+        }
+        LambdaUpdateWrapper<UserDO> updateWrapper = Wrappers.lambdaUpdate(UserDO.class)
+                .eq(UserDO::getUsername, username)
+                .setSql("like_count = like_count + " + increment);
+        baseMapper.update(null, updateWrapper);
+
+        /*
+          更新redis缓存
+         */
+
+        String key = USER_INFO_KEY + username;
+        String userInfo = stringRedisTemplate.opsForValue().get(key);
+        if (StrUtil.isNotEmpty(userInfo)) {
+            UserDO user = JSON.parseObject(userInfo, UserDO.class);
+            user.setLikeCount(user.getLikeCount() + increment);
+            stringRedisTemplate.opsForValue().set(key, JSON.toJSONString(user));
+        }
+    }
+
+    @Override
+    public void dislikeUser(String username, Integer decrement) {
+        if (decrement == null || decrement < 0) {
+            throw new ClientException(USER_INVALID_DATA);
+        }
+        if (!hasUsername(username)) {
+            throw new ClientException(USER_NAME_NULL);
+        }
+        LambdaQueryWrapper<UserDO> queryWrapper = Wrappers.lambdaQuery(UserDO.class)
+                .eq(UserDO::getUsername, username);
+        UserDO userDO = baseMapper.selectOne(queryWrapper);
+        if (userDO == null ) {
+            throw new ClientException(USER_NULL);
+        } else if(userDO.getLikeCount() == null || userDO.getLikeCount() < 0) {
+            throw new ClientException(USER_INVALID_DATA);
+        }
+        //检查减去后的值是否小于0
+        if (userDO.getLikeCount() - decrement < 0) {
+            throw new ClientException(USER_INVALID_DECREMENT);
+        }
+        LambdaUpdateWrapper<UserDO> updateWrapper = Wrappers.lambdaUpdate(UserDO.class)
+                .eq(UserDO::getUsername, username)
+                .setSql("like_count = like_count - " + decrement);
+        baseMapper.update(null, updateWrapper);
+        /*
+          更新redis缓存
+         */
+        String key = USER_INFO_KEY + username;
+        String userInfo = stringRedisTemplate.opsForValue().get(key);
+        if (StrUtil.isNotEmpty(userInfo)) {
+            UserDO user = JSON.parseObject(userInfo, UserDO.class);
+            user.setLikeCount(user.getLikeCount() - decrement);
+            stringRedisTemplate.opsForValue().set(key, JSON.toJSONString(user));
+        }
+    }
+
+    @Override
+    public void collectUpdate(Boolean collect) {
+        Integer change = collect ? 1 : -1;
+        String username = UserContext.getUsername();
+        LambdaQueryWrapper<UserDO> queryWrapper = Wrappers.lambdaQuery(UserDO.class)
+                .eq(UserDO::getUsername, username);
+        UserDO userDO = baseMapper.selectOne(queryWrapper);
+        if (userDO == null ) {
+            throw new ClientException(USER_NULL);
+        } else if(userDO.getCollectCount() == null || userDO.getCollectCount() < 0) {
+            throw new ClientException(USER_INVALID_DATA);
+        }
+        if(userDO.getCollectCount() + change < 0) {
+            throw new ClientException(USER_INVALID_DECREMENT);
+        }
+        LambdaUpdateWrapper<UserDO> updateWrapper = Wrappers.lambdaUpdate(UserDO.class)
+                .eq(UserDO::getUsername, username)
+                .setSql("collect_count = collect_count + " + change);
+        baseMapper.update(null, updateWrapper);
+
+        /*
+          更新redis缓存
+         */
+
+        String key = USER_INFO_KEY + username;
+        String userInfo = stringRedisTemplate.opsForValue().get(key);
+        if (StrUtil.isNotEmpty(userInfo)) {
+            UserDO user = JSON.parseObject(userInfo, UserDO.class);
+            user.setCollectCount(user.getCollectCount() + change);
+            stringRedisTemplate.opsForValue().set(key, JSON.toJSONString(user));
+        }
+    }
+
+    @Override
+    public void usefulUpdate(String username,Boolean useful) {
+        Integer change = useful ? 1 : -1;
+        LambdaQueryWrapper<UserDO> queryWrapper = Wrappers.lambdaQuery(UserDO.class)
+                .eq(UserDO::getUsername, username);
+        UserDO userDO = baseMapper.selectOne(queryWrapper);
+        if (userDO == null ) {
+            throw new ClientException(USER_NULL);
+        } else if(userDO.getUsefulCount() == null || userDO.getUsefulCount() < 0) {
+            throw new ClientException(USER_INVALID_DATA);
+        }
+        if(userDO.getUsefulCount() + change < 0) {
+            throw new ClientException(USER_INVALID_DECREMENT);
+        }
+        LambdaUpdateWrapper<UserDO> updateWrapper = Wrappers.lambdaUpdate(UserDO.class)
+                .eq(UserDO::getUsername, username)
+                .setSql("useful_count = useful_count + " + change);
+        baseMapper.update(null, updateWrapper);
+
+        /*
+          更新redis缓存
+         */
+
+        String key = USER_INFO_KEY + username;
+        String userInfo = stringRedisTemplate.opsForValue().get(key);
+        if (StrUtil.isNotEmpty(userInfo)) {
+            UserDO user = JSON.parseObject(userInfo, UserDO.class);
+            user.setUsefulCount(user.getUsefulCount() + change);
+            stringRedisTemplate.opsForValue().set(key, JSON.toJSONString(user));
+        }
+
     }
 
 }

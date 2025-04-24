@@ -54,4 +54,23 @@ public interface UserService extends IService<UserDO> {
      */
     void update(UserUpdateReqDTO requestParam);
 
+    /**
+     * 增加该用户被点赞数
+     */
+    void likeUser(String username, Integer increment);
+
+    /**
+     * 减少该用户被点赞数
+     */
+    void dislikeUser(String username, Integer decrement);
+
+    /**
+     * 修改该用户收藏题目数
+     */
+    void collectUpdate(Boolean collect);
+
+    /**
+     * 修改用户评论有用数
+     */
+    void usefulUpdate(String username,Boolean useful);
 }

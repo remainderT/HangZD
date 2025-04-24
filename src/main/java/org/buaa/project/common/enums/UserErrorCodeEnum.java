@@ -49,7 +49,9 @@ public enum UserErrorCodeEnum implements IErrorCode {
 
     USER_NULL("A000301", "用户记录不存在"),
 
-    USER_UPDATE_ERROR("A000302", "用户信息更新失败");
+    USER_UPDATE_ERROR("A000302", "用户信息更新失败"),
+
+    USER_INVALID_DECREMENT("A000401", "用户统计数据减少后小于0");
 
     private final String code;
 

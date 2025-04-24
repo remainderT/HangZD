@@ -96,5 +96,53 @@ public class UserController {
         return Results.success();
     }
 
+    /**
+     * 增加该用户被点赞数
+     */
+    @PutMapping("/api/answerly/v1/user/like")
+    public Result<Void> likeUser(@RequestParam("username") String username, @RequestParam("increment") Integer increment) {
+        userService.likeUser(username, increment);
+        return Results.success();
+    }
+
+    /**
+     * 减少该用户被点赞数
+     */
+    @PutMapping("/api/answerly/v1/user/dislike")
+    public Result<Void> dislikeUser(@RequestParam("username") String username, @RequestParam("decrement") Integer decrement) {
+        userService.dislikeUser(username, decrement);
+        return Results.success();
+    }
+
+    /**
+     * 添加/取消一个收藏
+     */
+    @PutMapping("/api/answerly/v1/user/collect")
+    public Result<Void> collectUpdate(@RequestParam("collect") Boolean collect) {
+        userService.collectUpdate(collect);
+        return Results.success();
+    }
+
+    /**
+     * 增加/减少该用户评论有用数
+     */
+    @PutMapping("/api/answerly/v1/user/useful")
+    public Result<Void> usefulUpdate(@RequestParam("username") String username, @RequestParam("useful") Boolean useful) {
+        userService.usefulUpdate(username,useful);
+        return Results.success();
+    }
+
+    /**
+     * 找回密码
+     */
+    @PostMapping("/api/answerly/v1/user/findback-password")
+    public Result<Void> findbackPassword(@RequestBody UserRegisterReqDTO requestParam) {
+        //TODO
+        return Results.success();
+    }
+
+
+
+
 }
 
