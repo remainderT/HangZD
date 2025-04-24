@@ -18,8 +18,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
 
-import static org.buaa.project.common.enums.MessageErrorCodeEnum.MESSAGE_NOT_FOUND;
-import static org.buaa.project.common.enums.MessageErrorCodeEnum.MESSAGE_SENDER_INCORRECT;
+import static org.buaa.project.common.enums.MessageErrorCodeEnum.*;
+
+//import org.buaa.project.service.UserService;
+import org.springframework.stereotype.Service;
 
 /**
  * 消息接口实现层
@@ -27,16 +29,28 @@ import static org.buaa.project.common.enums.MessageErrorCodeEnum.MESSAGE_SENDER_
 @Service
 @RequiredArgsConstructor
 public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageDO> implements MessageService {
-
+    //private final UserService userService;
 
     public boolean existsMessage(Long id) {
-        return (baseMapper.selectById(id) != null);
+        MessageDO message = baseMapper.selectById(id);
+        if (Objects.isNull(message)) {
+            return false;
+        }
+        // 检查是否已删除
+        if (message.getDelFlag() == 1) {
+            return false;
+        }
+        return true;
     }
 
     @Override
     public MessageDO getMessageById(Long id) {
         MessageDO message = baseMapper.selectById(id);
         if (Objects.isNull(message)) {
+            throw new ServiceException(MESSAGE_NOT_FOUND);
+        }
+        // 检查是否已删除
+        if (message.getDelFlag() == 1) {
             throw new ServiceException(MESSAGE_NOT_FOUND);
         }
         return message;
@@ -71,15 +85,20 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageDO> im
 
     @Override
     public void addMessage(MessageUploadReqDTO requestParam) {
+        //TODO:user的id应该从2开始自增，因为1是系统
+        checkMessageValid(requestParam);
         MessageDO message = BeanUtil.toBean(requestParam, MessageDO.class);
         message.setFromId(UserContext.getUserId());
         message.setStatus(0);//默认未读
         message.setDelFlag(0);//默认未删除
+        //message.setCreateTime();
+        message.setGenerateId(0L);
         baseMapper.insert(message);
     }
 
     @Override
     public void updateMessage(MessageUpdateReqDTO requestParam) {
+        checkMessageValid(requestParam);
         /*MessageDO message = BeanUtil.toBean(requestParam, MessageDO.class);
         if (!existsMessage(message.getId())) {
             throw new ServiceException(MESSAGE_NOT_FOUND);
@@ -118,5 +137,15 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageDO> im
         MessageDO message = baseMapper.selectById(id);
         message.setStatus(1); // 设置为已读
         baseMapper.updateById(message);
+    }
+
+    public void checkMessageValid(MessageUploadReqDTO requestParam) {
+        //TODO：检查消息内容是否为空
+        //TODO：检查消息接收者是否存在且不是系统
+    }
+
+    public void checkMessageValid(MessageUpdateReqDTO requestParam) {
+        //TODO：
+
     }
 }

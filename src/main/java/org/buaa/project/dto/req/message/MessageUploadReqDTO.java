@@ -26,7 +26,7 @@ public class MessageUploadReqDTO {
     /**
      * 创建时间
      */
-    private Date createTime;
+    //private Date createTime;
 
 
 }

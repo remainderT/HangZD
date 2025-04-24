@@ -39,6 +39,8 @@ public class RefreshTokenFilter implements Filter {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         String username = httpServletRequest.getHeader("username");
         String token = httpServletRequest.getHeader("token");
+        //System.out.println(username);
+        //System.out.println(token);
         if (StrUtil.isBlank(token) || StrUtil.isBlank(username)) {
             filterChain.doFilter(servletRequest, servletResponse);
             return;
