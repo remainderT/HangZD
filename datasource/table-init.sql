@@ -20,6 +20,7 @@ CREATE TABLE `user` (
                         `status` tinyint(4)        DEFAULT 0    COMMENT '状态',
                         `create_time` datetime     DEFAULT NULL COMMENT '创建时间',
                         `update_time` datetime     DEFAULT NULL COMMENT '修改时间',
+                        `active_days`   int     DEFAULT 1      not null comment '活跃天数',
                         `del_flag`    tinyint(1)   DEFAULT NULL COMMENT '删除标识 0：未删除 1：已删除',
                         PRIMARY KEY (`id`),
                         UNIQUE KEY idx_unique_username (username) USING BTREE
@@ -76,3 +77,11 @@ CREATE TABLE `message` (
                            KEY `index_to_id` (`to_id`),
                            KEY `index_type` (`type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='消息';
+
+DROP TABLE IF EXISTS `user_tag_history_pair`;
+create table `user_tag_history_pair`
+(
+    id          int          not null,
+    tag_history varchar(256) null comment '个人标签或者历史回答',
+    is_tag      tinyint(1)   null comment 'tag标识 0：历史回答 1：个人标签'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='标签-历史回答';
