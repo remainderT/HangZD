@@ -31,7 +31,7 @@ public class ImageController {
     /**
      * 登录时候获取验证码， 并把结果存入session中.
      */
-    @GetMapping("/api/answerly/v1/user/captcha")
+    @GetMapping("/api/hangzd/user/captcha")
     public void getCaptcha(HttpServletResponse response) {
         imageService.getCaptcha(response);
     }

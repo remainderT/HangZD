@@ -17,7 +17,7 @@ DB_CONFIG = {
     'host': 'localhost',
     'user': 'root',
     'password': 'xxxxxx', # 数据库密码
-    'database': 'astroq',
+    'database': 'hangzd',
     'port': 3306
 }
 

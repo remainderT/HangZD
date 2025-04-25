@@ -8,16 +8,16 @@ public class RedisCacheConstants {
     /**
      * 用户注册分布式锁
      */
-    public static final String USER_REGISTER_LOCK_KEY = "astroq:user:register:lock:";
+    public static final String USER_REGISTER_LOCK_KEY = "hangzd:user:register:lock:";
 
     /**
      * 用户注册验证码缓存
      */
-    public static final String USER_REGISTER_CODE_KEY = "astroq:user:register:code:";
+    public static final String USER_REGISTER_CODE_KEY = "hangzd:user:register:code:";
     /**
      * 用户注册验证码发送计时
      */
-    public static final String USER_CODE_TO_FREQUENT = "astroq:user:register:frequent:";
+    public static final String USER_CODE_TO_FREQUENT = "hangzd:user:register:frequent:";
 
     /**
      * 用户注册验证码缓存过期时间
@@ -27,7 +27,7 @@ public class RedisCacheConstants {
     /**
      * 用户登录缓存标识
      */
-    public static final String USER_LOGIN_KEY = "astroq:user:login:";
+    public static final String USER_LOGIN_KEY = "hangzd:user:login:";
 
     /**
      * 用户登录缓存过期时间(天)
@@ -37,12 +37,12 @@ public class RedisCacheConstants {
     /**
      * 用户个人信息缓存标识
      */
-    public static final String USER_INFO_KEY = "astroq:user:info:";
+    public static final String USER_INFO_KEY = "hangzd:user:info:";
 
     /**
      * 用户登录图片验证码
      */
-    public static final String USER_LOGIN_CAPTCHA_KEY = "astroq:user:login:captcha:";
+    public static final String USER_LOGIN_CAPTCHA_KEY = "hangzd:user:login:captcha:";
 
 
 

@@ -32,7 +32,7 @@ public class UserController {
     /**
      * 根据用户名查找用户信
      */
-    @GetMapping("/api/answerly/v1/user/{username}")
+    @GetMapping("/api/hangzd/user/{username}")
     public Result<UserRespDTO> getUserByUsername(@PathVariable("username") String username) {
         return Results.success(userService.getUserByUsername(username));
     }
@@ -40,7 +40,7 @@ public class UserController {
     /**
      * 查询用户名是否存在
      */
-    @GetMapping("/api/answerly/v1/user/has-username")
+    @GetMapping("/api/hangzd/user/has-username")
     public Result<Boolean> hasUsername(@RequestParam("username") String username) {
         return Results.success(userService.hasUsername(username));
     }
@@ -48,7 +48,7 @@ public class UserController {
     /**
      * 注册时候获得验证码
      */
-    @GetMapping("/api/answerly/v1/user/send-code")
+    @GetMapping("/api/hangzd/user/send-code")
     public Result<Boolean> sendCode(@RequestParam("mail") String mail) {
         return Results.success(userService.sendCode(mail));
     }
@@ -56,7 +56,7 @@ public class UserController {
     /**
      * 注册用户
      */
-    @PostMapping("/api/answerly/v1/user")
+    @PostMapping("/api/hangzd/user")
     public Result<Void> register(@RequestBody UserRegisterReqDTO requestParam) {
         userService.register(requestParam);
         return Results.success();
@@ -65,7 +65,7 @@ public class UserController {
     /**
      * 用户登录
      */
-    @PostMapping("/api/answerly/v1/user/login")
+    @PostMapping("/api/hangzd/user/login")
     public Result<UserLoginRespDTO> login(@RequestBody UserLoginReqDTO requestParam, ServletRequest request) {
         return Results.success(userService.login(requestParam, request));
     }
@@ -73,7 +73,7 @@ public class UserController {
     /**
      * 检查用户是否登录
      */
-    @GetMapping("/api/answerly/v1/user/check-login")
+    @GetMapping("/api/hangzd/user/check-login")
     public Result<Boolean> checkLogin(@RequestParam("username") String username, @RequestParam("token") String token) {
         return Results.success(userService.checkLogin(username, token));
     }
@@ -81,7 +81,7 @@ public class UserController {
     /**
      * 用户退出登录
      */
-    @DeleteMapping("/api/answerly/v1/user/logout")
+    @DeleteMapping("/api/hangzd/user/logout")
     public Result<Void> logout(@RequestParam("username") String username, @RequestParam("token") String token) {
         userService.logout(username, token);
         return Results.success();
@@ -90,7 +90,7 @@ public class UserController {
     /**
      * 更新用户信息
      */
-    @PutMapping("/api/answerly/v1/user")
+    @PutMapping("/api/hangzd/user")
     public Result<Void> update(@RequestBody UserUpdateReqDTO requestParam) {
         userService.update(requestParam);
         return Results.success();
@@ -99,7 +99,7 @@ public class UserController {
     /**
      * 增加该用户被点赞数
      */
-    @PutMapping("/api/answerly/v1/user/like")
+    @PutMapping("/api/hangzd/user/like")
     public Result<Void> likeUser(@RequestParam("username") String username, @RequestParam("increment") Integer increment) {
         userService.likeUser(username, increment);
         return Results.success();
@@ -108,7 +108,7 @@ public class UserController {
     /**
      * 减少该用户被点赞数
      */
-    @PutMapping("/api/answerly/v1/user/dislike")
+    @PutMapping("/api/hangzd/user/dislike")
     public Result<Void> dislikeUser(@RequestParam("username") String username, @RequestParam("decrement") Integer decrement) {
         userService.dislikeUser(username, decrement);
         return Results.success();
@@ -117,7 +117,7 @@ public class UserController {
     /**
      * 添加/取消一个收藏
      */
-    @PutMapping("/api/answerly/v1/user/collect")
+    @PutMapping("/api/hangzd/user/collect")
     public Result<Void> collectUpdate(@RequestParam("collect") Boolean collect) {
         userService.collectUpdate(collect);
         return Results.success();
@@ -126,7 +126,7 @@ public class UserController {
     /**
      * 增加/减少该用户评论有用数
      */
-    @PutMapping("/api/answerly/v1/user/useful")
+    @PutMapping("/api/hangzd/user/useful")
     public Result<Void> usefulUpdate(@RequestParam("username") String username, @RequestParam("useful") Boolean useful) {
         userService.usefulUpdate(username,useful);
         return Results.success();
@@ -135,7 +135,7 @@ public class UserController {
     /**
      * 找回密码
      */
-    @PostMapping("/api/answerly/v1/user/findback-password")
+    @PostMapping("/api/hangzd/user/findback-password")
     public Result<Void> findbackPassword(@RequestBody UserRegisterReqDTO requestParam) {
         //TODO
         return Results.success();

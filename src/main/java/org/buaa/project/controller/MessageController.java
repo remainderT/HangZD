@@ -23,7 +23,7 @@ public class MessageController {
     /**
      * 根据ID获取消息
      */
-    @GetMapping("/api/astroq/message/{id}")
+    @GetMapping("/api/hangzd/message/{id}")
     public Result<MessageDO> getMessageById(@PathVariable Long id) {
         return Results.success(messageService.getMessageById(id));
     }
@@ -31,7 +31,7 @@ public class MessageController {
     /**
      * 获取当前用户的消息列表
      */
-    @GetMapping("/api/astroq/messages")
+    @GetMapping("/api/hangzd/messages")
     public Result<List<MessageDO>> getUsersMessages() {
         return Results.success(messageService.getUsersMessages());
     }
@@ -39,7 +39,7 @@ public class MessageController {
     /**
      * 根据发送者ID获取消息列表
      */
-    @GetMapping("/api/astroq/messages/sender/{senderId}")
+    @GetMapping("/api/hangzd/messages/sender/{senderId}")
     public Result<List<MessageDO>> getMessagesBySender(@PathVariable Long senderId) {
         return Results.success(messageService.getMessagesBySender(senderId));
     }
@@ -47,7 +47,7 @@ public class MessageController {
     /**
      * 根据发送者和接收者ID获取消息列表
      */
-    @GetMapping("/api/astroq/messages/sender/{senderId}/receiver/{receiverId}")
+    @GetMapping("/api/hangzd/messages/sender/{senderId}/receiver/{receiverId}")
     public Result<List<MessageDO>> getMessagesBySenderAndReceiver(@PathVariable Long senderId, @PathVariable Long receiverId) {
         return Results.success(messageService.getMessagesBySenderAndReceiver(senderId, receiverId));
     }
@@ -55,7 +55,7 @@ public class MessageController {
     /**
      * 添加消息
      */
-    @PostMapping("/api/astroq/message")
+    @PostMapping("/api/hangzd/message")
     public Result<Void> addMessage(@RequestBody MessageUploadReqDTO message) {
         messageService.addMessage(message);
         return Results.success();
@@ -64,7 +64,7 @@ public class MessageController {
     /**
      * 更新消息
      */
-    @PutMapping("/api/astroq/message")
+    @PutMapping("/api/hangzd/message")
     public Result<Void> updateMessage(@RequestBody MessageUpdateReqDTO message) {
         messageService.updateMessage(message);
         return Results.success();
@@ -73,7 +73,7 @@ public class MessageController {
     /**
      * 删除消息
      */
-    @DeleteMapping("/api/astroq/message/{id}")
+    @DeleteMapping("/api/hangzd/message/{id}")
     public Result<Void> deleteMessage(@PathVariable Long id) {
         messageService.deleteMessage(id);
         return Results.success();
@@ -82,7 +82,7 @@ public class MessageController {
     /**
      * 将本用户发送的未删除的消息按照创建时间降序排序
      */
-    @GetMapping("/api/astroq/messages/sort")
+    @GetMapping("/api/hangzd/messages/sort")
     public Result<List<MessageDO>> sortMessagesByCreateTime() {
         return Results.success(messageService.sortMessagesByCreateTime());
     }
@@ -90,7 +90,7 @@ public class MessageController {
     /**
      * 已读消息
      */
-    @PutMapping("/api/astroq/message/read/{id}")
+    @PutMapping("/api/hangzd/message/read/{id}")
     public Result<Void> readMessage(@PathVariable Long id) {
         messageService.readMessage(id);
         return Results.success();

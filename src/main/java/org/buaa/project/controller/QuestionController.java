@@ -26,7 +26,7 @@ public class QuestionController {
     /**
      * 上传问题
      */
-    @PostMapping("/api/astroq/question")
+    @PostMapping("/api/hangzd/question")
     public Result<Void> uploadQuestion(@RequestBody QuestionUploadReqDTO requestParam) {
         questionService.uploadQuestion(requestParam);
         return Results.success();
@@ -35,7 +35,7 @@ public class QuestionController {
     /**
      * 修改问题
      */
-    @PutMapping("/api/astroq/question")
+    @PutMapping("/api/hangzd/question")
     public Result<Void> updateQuestion(@RequestBody QuestionUpdateReqDTO requestParam) {
         questionService.updateQuestion(requestParam);
         return Results.success();
@@ -44,7 +44,7 @@ public class QuestionController {
     /**
      * 删除问题
      */
-    @DeleteMapping("/api/astroq/question")
+    @DeleteMapping("/api/hangzd/question")
     public Result<Void> deleteQuestion(@RequestParam("id") Long Id) {
         questionService.deleteQuestion(Id);
         return Results.success();
@@ -53,7 +53,7 @@ public class QuestionController {
     /**
      * 标记问题已经解决
      */
-    @PostMapping("/api/astroq/question/solve")
+    @PostMapping("/api/hangzd/question/solve")
     public Result<Void> resolvedQuestion(@RequestBody QuestionSolveReqDTO requestParam) {
         questionService.resolvedQuestion(requestParam);
         return Results.success();

@@ -28,9 +28,9 @@ public class
 LoginCheckFilter implements Filter {
 
     private static final List<String> IGNORE_URI = Lists.newArrayList(
-            "/api/answerly/v1/user/login", //登录
-            "/api/answerly/v1/user/send-code", //注册时发送验证码
-            "/api/answerly/v1/user/captcha" //登录时获取验证码
+            "/api/hangzd/user/login", //登录
+            "/api/hangzd/user/send-code", //注册时发送验证码
+            "/api/hangzd/user/captcha" //登录时获取验证码
     );
 
     private boolean requireLogin(String URI, String method) {
@@ -38,7 +38,7 @@ LoginCheckFilter implements Filter {
             return false;
         }
         // 注册用户
-        if (URI.equals("/api/answerly/v1/user") && method.equals("POST")) {
+        if (URI.equals("/api/hangzd/user") && method.equals("POST")) {
             return false;
         }
         return true;

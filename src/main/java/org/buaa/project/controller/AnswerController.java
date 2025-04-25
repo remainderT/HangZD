@@ -27,7 +27,7 @@ public class AnswerController {
     /**
      * 添加回答
      */
-    @PostMapping("/api/astroq/answer")
+    @PostMapping("/api/hangzd/answer")
     public Result<Void> postAnswer(@RequestBody AnswerUploadReqDTO message) {
         answerService.postAnswer(message);
         return Results.success();
@@ -36,7 +36,7 @@ public class AnswerController {
     /**
      * 根据ID获取回答
      */
-    @GetMapping("/api/astroq/answer/{id}")
+    @GetMapping("/api/hangzd/answer/{id}")
     public Result<AnswerDO> getAnswerById(@PathVariable Long id) {
         return Results.success(answerService.getAnswerById(id));
     }
@@ -44,7 +44,7 @@ public class AnswerController {
     /**
      * 修改回答
      */
-    @PutMapping("/api/astroq/answer")
+    @PutMapping("/api/hangzd/answer")
     public Result<Void> updateAnswer(@RequestBody AnswerUpdateReqDTO requestParam) {
         answerService.updateAnswer(requestParam);
         return Results.success();
@@ -54,7 +54,7 @@ public class AnswerController {
     /**
      * 删除回答
      */
-    @DeleteMapping("/api/astroq/answer")
+    @DeleteMapping("/api/hangzd/answer")
     public Result<Void> deleteAnswer(@RequestParam("id") Long Id) {
         answerService.deleteAnswer(Id);
         return Results.success();
