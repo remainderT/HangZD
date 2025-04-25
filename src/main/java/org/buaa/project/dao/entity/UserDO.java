@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Builder;
 import lombok.Data;
 import org.buaa.project.common.database.BaseDO;
+import org.buaa.project.toolkit.sensitive.SensitiveField;
 
 /**
  * 用户持久层实体
@@ -20,6 +21,7 @@ public class UserDO extends BaseDO {
     /**
      * 用户名
      */
+    @SensitiveField
     private String username;
 
     /**

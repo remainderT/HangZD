@@ -3,6 +3,7 @@ package org.buaa.project.dao.entity;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import org.buaa.project.common.database.BaseDO;
+import org.buaa.project.toolkit.sensitive.SensitiveField;
 
 /**
  * 问题持久层实体
@@ -24,11 +25,13 @@ public class QuestionDO extends BaseDO {
     /**
      * 标题
      */
+    @SensitiveField
     private String title;
 
     /**
      * 内容
      */
+    @SensitiveField
     private String content;
 
     /**

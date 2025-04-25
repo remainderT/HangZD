@@ -3,6 +3,7 @@ package org.buaa.project.dao.entity;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import org.buaa.project.common.database.BaseDO;
+import org.buaa.project.toolkit.sensitive.SensitiveField;
 
 /**
  * 回答持久层实体
@@ -34,6 +35,7 @@ public class AnswerDO extends BaseDO {
     /**
      * content - the content of the comment, with a maximum length of 1024 characters
      */
+    @SensitiveField
     private String content;
 
     /**
