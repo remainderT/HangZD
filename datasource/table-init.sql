@@ -13,7 +13,7 @@ CREATE TABLE `user` (
                         `avatar`        varchar(60)     DEFAULT NULL COMMENT '头像',
                         `phone`         varchar(20)     DEFAULT NULL COMMENT '手机号',
                         `introduction`  varchar(1024)   DEFAULT NULL COMMENT '个人简介',
-                        `tag_history`   varchar(256)    DEFAULT NULL COMMENT '个人标签',
+                        `tags`          varchar(1024)   DEFAULT NULL COMMENT '个人标签',
                         `like_count`    int(11)         DEFAULT 0 COMMENT '点赞数',
                         `collect_count`  int(11)         DEFAULT 0 COMMENT '收藏问题的数量',
                         `useful_count` int(11)          DEFAULT 0 COMMENT '回答有用数量',
