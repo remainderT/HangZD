@@ -13,6 +13,7 @@ CREATE TABLE `user` (
                         `avatar`        varchar(60)     DEFAULT NULL COMMENT '头像',
                         `phone`         varchar(20)     DEFAULT NULL COMMENT '手机号',
                         `introduction`  varchar(1024)   DEFAULT NULL COMMENT '个人简介',
+                        `tag_history`   varchar(256)    DEFAULT NULL COMMENT '个人标签',
                         `like_count`    int(11)         DEFAULT 0 COMMENT '点赞数',
                         `collect_count`  int(11)         DEFAULT 0 COMMENT '收藏问题的数量',
                         `useful_count` int(11)          DEFAULT 0 COMMENT '回答有用数量',
@@ -77,11 +78,3 @@ CREATE TABLE `message` (
                            KEY `index_to_id` (`to_id`),
                            KEY `index_type` (`type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='消息';
-
-DROP TABLE IF EXISTS `user_tag_history_pair`;
-create table `user_tag_history_pair`
-(
-    id          int          not null,
-    tag_history varchar(256) null comment '个人标签或者历史回答',
-    is_tag      tinyint(1)   null comment 'tag标识 0：历史回答 1：个人标签'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='标签-历史回答';
