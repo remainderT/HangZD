@@ -16,8 +16,8 @@ embedding_model = SentenceTransformer('multi-qa-mpnet-base-dot-v1')
 DB_CONFIG = {
     'host': 'localhost',
     'user': 'root',
-    'password': 'xxxxxx', # 数据库密码
-    'database': 'hangzd',
+    'password': 'xxxxxx', #你的mysql数据库密码
+    'database': 'astroq',
     'port': 3306
 }
 
@@ -34,8 +34,8 @@ def weighted_user_embedding(user, tag_weight=0.7, history_weight=0.3):
     if len(user["tags"]) > 0:
         tag_text = translate_zh_to_en(user["tags"])
         tag_vec = embedding_model.encode(tag_text)
-    if len(user["history"]) > 0:
-        history_text = translate_zh_to_en(user["history"])
+    if len(user["history_replies"]) > 0:
+        history_text = translate_zh_to_en(user["history_replies"])
         history_vec = embedding_model.encode(history_text)
     return tag_weight * tag_vec + history_weight * history_vec
 
@@ -48,31 +48,34 @@ def load_users_from_mysql():
     connection = pymysql.connect(**DB_CONFIG)
     cursor = connection.cursor(pymysql.cursors.DictCursor)
 
-    cursor.execute("SELECT id, active_days, like_count FROM user")
+    cursor.execute("SELECT id, active_days, like_count, avatar, username, useful_count, tags FROM user")
     activity_data = cursor.fetchall()
-
-    cursor.execute("SELECT id, tag_history, is_tag FROM user_tag_history_pair")
-    profile_data = cursor.fetchall()
+    cursor.execute("SELECT user_id, content FROM answer")
+    replies = cursor.fetchall()
 
     users = []
     for user in activity_data:
         id = user["id"]
         like_count = user["like_count"]
         active_days = user["active_days"]
-        tags = []
-        history = []
+        avatar = user["avatar"]
+        username = user["username"]
+        useful_count = user["useful_count"]
+        tags = user["tags"].split(',')
 
-        for row in profile_data:
-            if row["id"] == id and row["is_tag"] == 1:
-                tags.append(row["tag_history"])
-            elif row["id"] == id and row["is_tag"] == 0:
-                history.append(row["tag_history"])
+        history_replies = []
+        for reply in replies:
+            if reply["user_id"] == id:
+                history_replies.append(reply["content"])
         users.append({
             "id": id,
             "tags": tags,
-            "history": history,
+            "history_replies": history_replies,
             "active_days": active_days,
-            "like_count": like_count
+            "like_count": like_count,
+            "avatar": avatar,
+            "username": username,
+            "useful_count": useful_count
         })
 
     # print(users)
@@ -104,9 +107,12 @@ def recommend():
     results = [{
         "id": u["id"],
         "tags": u["tags"],
-        "history": u["history"],
+        "history_replies": u["history_replies"],
         "active_days": u["active_days"],
-        "like_count": u["like_count"]
+        "like_count": u["like_count"],
+        "avatar": u["avatar"],
+        "username": u["username"],
+        "userful_count": u["useful_count"]
     } for _, u in top_users]
 
     return jsonify(results)
