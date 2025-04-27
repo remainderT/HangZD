@@ -3,7 +3,8 @@ package org.buaa.project.common.enums;
 import org.buaa.project.common.convention.errorcode.IErrorCode;
 
 public enum AnswerErrorCodeEnum implements IErrorCode {
-    MESSAGE_NOT_FOUND("E000101", "该回答不存在")
+    ANSWER_NULL("E000101", "该回答不存在"),
+    ANSWER_POST_FAIL("E000102", "回答发布失败"),
     ;
 
     private final String code;

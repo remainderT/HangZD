@@ -8,13 +8,25 @@ import lombok.Data;
 @Data
 public class AnswerUploadReqDTO {
     /**
-     * 回答id
+     * 发布人id
      */
-    private Long id;
-
+    private Long user_id;
     /**
-     * 回答内容
+     * 用户名
+     */
+    private String username;
+    /**
+     * 对应问题的id
+     */
+    private Long question_id;
+    /**
+     * 内容
      */
     private String content;
+    /**
+     * 包含的图片
+     */
+    private String images;
+
 
 }

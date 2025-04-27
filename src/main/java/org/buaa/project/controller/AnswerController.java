@@ -9,6 +9,7 @@ import org.buaa.project.dto.req.answer.AnswerUpdateReqDTO;
 import org.buaa.project.dto.req.answer.AnswerUploadReqDTO;
 import org.buaa.project.dto.req.message.MessageUpdateReqDTO;
 import org.buaa.project.dto.req.message.MessageUploadReqDTO;
+import org.buaa.project.dto.resp.AnswerRespDTO;
 import org.buaa.project.service.AnswerService;
 import org.buaa.project.service.MessageService;
 import org.springframework.web.bind.annotation.*;
@@ -37,7 +38,7 @@ public class AnswerController {
      * 根据ID获取回答
      */
     @GetMapping("/api/hangzd/answer/{id}")
-    public Result<AnswerDO> getAnswerById(@PathVariable Long id) {
+    public Result<AnswerRespDTO> getAnswerById(@PathVariable Long id) {
         return Results.success(answerService.getAnswerById(id));
     }
 

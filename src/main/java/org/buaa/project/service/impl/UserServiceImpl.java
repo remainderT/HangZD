@@ -17,11 +17,17 @@ import org.buaa.project.common.consts.MailSendConstants;
 import org.buaa.project.common.convention.exception.ClientException;
 import org.buaa.project.common.convention.exception.ServiceException;
 import org.buaa.project.common.enums.UserErrorCodeEnum;
+import org.buaa.project.dao.entity.MessageDO;
+import org.buaa.project.dao.entity.QuestionDO;
 import org.buaa.project.dao.entity.UserDO;
+import org.buaa.project.dao.mapper.QuestionMapper;
 import org.buaa.project.dao.mapper.UserMapper;
+import org.buaa.project.dao.mapper.MessageMapper;
 import org.buaa.project.dto.req.user.UserLoginReqDTO;
 import org.buaa.project.dto.req.user.UserRegisterReqDTO;
 import org.buaa.project.dto.req.user.UserUpdateReqDTO;
+import org.buaa.project.dto.resp.MessageRespDTO;
+import org.buaa.project.dto.resp.QuestionRespDTO;
 import org.buaa.project.dto.resp.UserLoginRespDTO;
 import org.buaa.project.dto.resp.UserRespDTO;
 import org.buaa.project.service.UserService;
@@ -29,6 +35,7 @@ import org.buaa.project.toolkit.RandomGenerator;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -37,7 +44,9 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -62,10 +71,27 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
     @Value("${spring.mail.username}")
     private String from;
 
+    @Autowired
+    private MessageMapper messageMapper;
+    @Autowired
+    private QuestionMapper questionMapper;
+
     @Override
     public UserRespDTO getUserByUsername(String username) {
         LambdaQueryWrapper<UserDO> queryWrapper = Wrappers.lambdaQuery(UserDO.class)
                 .eq(UserDO::getUsername, username);
+        UserDO userDO = baseMapper.selectOne(queryWrapper);
+        if (userDO == null) {
+            throw new ServiceException(UserErrorCodeEnum.USER_NULL);
+        }
+        UserRespDTO result = new UserRespDTO();
+        BeanUtils.copyProperties(userDO, result);
+        return result;
+    }
+    @Override
+    public UserRespDTO getUserById(Long id) {
+        LambdaQueryWrapper<UserDO> queryWrapper = Wrappers.lambdaQuery(UserDO.class)
+                .eq(UserDO::getId, id);
         UserDO userDO = baseMapper.selectOne(queryWrapper);
         if (userDO == null) {
             throw new ServiceException(UserErrorCodeEnum.USER_NULL);
@@ -376,5 +402,61 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
         }
 
     }
+
+    @Override
+    public List<MessageRespDTO> getActiveAnswers(String username) {
+        // 根据用户名查询用户信息
+        LambdaQueryWrapper<UserDO> userQueryWrapper = Wrappers.lambdaQuery(UserDO.class)
+                .eq(UserDO::getUsername, username);
+        UserDO userDO = baseMapper.selectOne(userQueryWrapper);
+        if (userDO == null) {
+            throw new ClientException(USER_NULL);
+        }
+
+        // 从Message表中查询该用户的所有活跃回答（del_flag = 0）
+        LambdaQueryWrapper<MessageDO> messageQueryWrapper = Wrappers.lambdaQuery(MessageDO.class)
+                .eq(MessageDO::getFromId, userDO.getId())
+                .eq(MessageDO::getDelFlag, 0);
+        List<MessageDO> messageDOList = messageMapper.selectList(messageQueryWrapper);
+
+        // 将MessageDO转换为MessageRespDTO
+        List<MessageRespDTO> messageRespDTOS = new ArrayList<>();
+        for (MessageDO messageDO : messageDOList) {
+            MessageRespDTO messageRespDTO = new MessageRespDTO();
+            BeanUtils.copyProperties(messageDO, messageRespDTO);
+            messageRespDTOS.add(messageRespDTO);
+        }
+
+        return messageRespDTOS;
+    }
+
+    @Override
+    public List<QuestionRespDTO> getActiveQuestions(String username) {
+        // 根据用户名查询用户信息
+        LambdaQueryWrapper<UserDO> userQueryWrapper = Wrappers.lambdaQuery(UserDO.class)
+                .eq(UserDO::getUsername, username);
+        UserDO userDO = baseMapper.selectOne(userQueryWrapper);
+        if (userDO == null) {
+            throw new ClientException(USER_NULL);
+        }
+
+        // 从Question表中查询该用户的所有活跃回答（del_flag = 0）
+
+        LambdaQueryWrapper<QuestionDO> questionQueryWrapper = Wrappers.lambdaQuery(QuestionDO.class)
+                .eq(QuestionDO::getUserId, userDO.getId())
+                .eq(QuestionDO::getDelFlag, 0);
+        //System.out.println("1");
+        List<QuestionDO> questionDOList = questionMapper.selectList(questionQueryWrapper);
+        //System.out.println("2");
+        List<QuestionRespDTO> questionRespDTOS = new ArrayList<>();
+        for (QuestionDO questionDO : questionDOList) {
+            QuestionRespDTO questionRespDTO = new QuestionRespDTO();
+            BeanUtils.copyProperties(questionDO, questionRespDTO);
+            questionRespDTOS.add(questionRespDTO);
+        }
+
+        return questionRespDTOS;
+    }
+
 
 }

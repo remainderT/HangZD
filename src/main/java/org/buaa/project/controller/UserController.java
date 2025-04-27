@@ -7,6 +7,8 @@ import org.buaa.project.common.convention.result.Results;
 import org.buaa.project.dto.req.user.UserLoginReqDTO;
 import org.buaa.project.dto.req.user.UserRegisterReqDTO;
 import org.buaa.project.dto.req.user.UserUpdateReqDTO;
+import org.buaa.project.dto.resp.MessageRespDTO;
+import org.buaa.project.dto.resp.QuestionRespDTO;
 import org.buaa.project.dto.resp.UserLoginRespDTO;
 import org.buaa.project.dto.resp.UserRespDTO;
 import org.buaa.project.service.UserService;
@@ -18,6 +20,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 
 /**
@@ -35,6 +39,13 @@ public class UserController {
     @GetMapping("/api/hangzd/user/{username}")
     public Result<UserRespDTO> getUserByUsername(@PathVariable("username") String username) {
         return Results.success(userService.getUserByUsername(username));
+    }
+    /**
+     * 根据用户ID查找用户信息
+     */
+    @GetMapping("/api/hangzd/user/id/{id}")
+    public Result<UserRespDTO> getUserById(@PathVariable("id") Long id) {
+        return Results.success(userService.getUserById(id));
     }
 
     /**
@@ -135,13 +146,27 @@ public class UserController {
     /**
      * 找回密码
      */
-    @PostMapping("/api/hangzd/user/findback-password")
+    /*@PostMapping("/api/hangzd/user/findback-password")
     public Result<Void> findbackPassword(@RequestBody UserRegisterReqDTO requestParam) {
         //TODO
         return Results.success();
+    }*/
+
+    /**
+     * 获取当前用户的所有活跃回答列表
+     */
+    @GetMapping("/api/hangzd/user/active_answers")
+    public Result<List<MessageRespDTO>> getActiveAnswers(@RequestParam("username") String username) {
+        return Results.success(userService.getActiveAnswers(username));
     }
 
-
+    /**
+     * 获取当前用户的所有活跃提问列表
+     */
+    @GetMapping("/api/hangzd/user/active_questions")
+    public Result<List<QuestionRespDTO>> getActiveQuestions(@RequestParam("username") String username) {
+        return Results.success(userService.getActiveQuestions(username));
+    }
 
 
 }

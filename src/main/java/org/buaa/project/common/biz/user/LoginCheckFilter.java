@@ -17,6 +17,7 @@ import org.buaa.project.common.convention.result.Results;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.Locale;
 
 import static org.buaa.project.common.enums.UserErrorCodeEnum.USER_TOKEN_NULL;
 
@@ -31,6 +32,8 @@ LoginCheckFilter implements Filter {
             "/api/hangzd/user/login", //登录
             "/api/hangzd/user/send-code", //注册时发送验证码
             "/api/hangzd/user/captcha" //登录时获取验证码
+            /*"/api/answerly/v1/user/send-code",
+            "/api/answerly/v1/user/login"*/
     );
 
     private boolean requireLogin(String URI, String method) {

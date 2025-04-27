@@ -5,6 +5,8 @@ import lombok.Data;
 import org.buaa.project.common.database.BaseDO;
 import org.buaa.project.toolkit.sensitive.SensitiveField;
 
+import java.sql.Date;
+
 /**
  * 回答持久层实体
  */
@@ -30,7 +32,7 @@ public class AnswerDO extends BaseDO {
     /**
      * question_id - the ID of the question this comment responds to
      */
-    private Long questionId;
+    private Long question_id;
 
     /**
      * content - the content of the comment, with a maximum length of 1024 characters
@@ -42,6 +44,8 @@ public class AnswerDO extends BaseDO {
      * images - paths to images associated with the comment, separated by commas, with a maximum of 9 images
      */
     private String images;
+
+    private Integer like_count;
 
     /**
      * useful - indicates if the comment is marked as useful, 1 for true, 0 for false
