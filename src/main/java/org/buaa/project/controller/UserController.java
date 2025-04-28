@@ -168,6 +168,9 @@ public class UserController {
         return Results.success(userService.getActiveQuestions(username));
     }
     
+    /**
+     * 更新当前用户的标签
+     */
     @PutMapping("/api/hangzd/user/tags")
     public Result<Void> updateUserTags(@RequestParam("username") String username, @RequestParam String tags) {
         userService.updateTags(username, tags);
