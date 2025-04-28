@@ -167,7 +167,11 @@ public class UserController {
     public Result<List<QuestionRespDTO>> getActiveQuestions(@RequestParam("username") String username) {
         return Results.success(userService.getActiveQuestions(username));
     }
-
-
+    
+    @PutMapping("/api/hangzd/user/tags")
+    public Result<Void> updateUserTags(@RequestParam("username") String username, @RequestParam String tags) {
+        userService.updateTags(username, tags);
+        return Results.success();
+    }
 }
 

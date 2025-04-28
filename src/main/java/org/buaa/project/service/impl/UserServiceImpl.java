@@ -457,6 +457,31 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
 
         return questionRespDTOS;
     }
-
-
+    
+    @Override
+    public void updateTags(String username, String tags) {
+        if (!Objects.equals(username, UserContext.getUsername())) {
+            throw new ClientException(USER_UPDATE_ERROR);
+        }
+        
+        if (tags == null) {
+            throw new ClientException(USER_INVALID_DATA);
+        }
+        if (!hasUsername(username)) {
+            throw new ClientException(USER_NAME_NULL);
+        }
+        
+        LambdaQueryWrapper<UserDO> queryWrapper = Wrappers.lambdaQuery(UserDO.class)
+                .eq(UserDO::getUsername, username);
+        UserDO userDO = baseMapper.selectOne(queryWrapper);
+        if (userDO == null) {
+            throw new ClientException(USER_NULL);
+        }
+        
+        LambdaUpdateWrapper<UserDO> updateWrapper = Wrappers.lambdaUpdate(UserDO.class)
+                .eq(UserDO::getUsername, username)
+                .set(UserDO::getTags, tags);
+        baseMapper.update(null, updateWrapper);
+    }
+    
 }

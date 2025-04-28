@@ -91,4 +91,9 @@ public interface UserService extends IService<UserDO> {
      * 获取当前用户的所有活跃问题列表
      */
     List<QuestionRespDTO> getActiveQuestions(String username);
+    
+    /**
+     * 更新当前用户的用户标签
+     */
+    void updateTags(String username, String newTags);
 }

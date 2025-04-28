@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
 import org.buaa.project.toolkit.serialize.PhoneDesensitizationSerializer;
 
+import java.util.List;
+
 /**
  * 用户信息返回参数响应
  */
@@ -50,5 +52,9 @@ public class UserRespDTO {
      */
     @JsonSerialize(using = PhoneDesensitizationSerializer.class)
     private String phone;
-
+    
+    /**
+     * 用户标签
+     */
+    private String tags;
 }
