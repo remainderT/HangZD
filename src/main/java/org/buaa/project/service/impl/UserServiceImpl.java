@@ -247,10 +247,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
         if (!requestParam.getOldUsername().equals(requestParam.getNewUsername()) && hasUsername(requestParam.getNewUsername())) {
             throw new ClientException(USER_NAME_EXIST);
         }
-        String password = DigestUtils.md5DigestAsHex((requestParam.getPassword() + UserContext.getSalt()).getBytes());
+        
         UserDO userDO = UserDO.builder()
                         .username(requestParam.getNewUsername())
-                        .password(password)
                         .avatar(requestParam.getAvatar())
                         .phone(requestParam.getPhone())
                         .introduction(requestParam.getIntroduction())
@@ -269,7 +268,27 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
                 .eq(UserDO::getUsername, requestParam.getNewUsername()));
         stringRedisTemplate.opsForValue().set(USER_INFO_KEY + requestParam.getNewUsername(), JSON.toJSONString(newUserDO));
     }
-
+    
+    @Override
+    public void changePassword(String oldPassword, String newPassword) {
+        LambdaQueryWrapper<UserDO> queryWrapper = Wrappers.lambdaQuery(UserDO.class)
+                .eq(UserDO::getUsername, UserContext.getUsername());
+        UserDO userDO = baseMapper.selectOne(queryWrapper);
+        
+        String password = DigestUtils.md5DigestAsHex((oldPassword + userDO.getSalt()).getBytes());
+        if (!Objects.equals(userDO.getPassword(), password)) {
+            throw new ClientException(USER_PASSWORD_ERROR);
+        }
+        
+        newPassword = DigestUtils.md5DigestAsHex((newPassword + UserContext.getSalt()).getBytes());
+        
+        LambdaUpdateWrapper<UserDO> updateWrapper = Wrappers.lambdaUpdate(UserDO.class)
+                .eq(UserDO::getUsername, UserContext.getUsername())
+                .set(UserDO::getPassword, newPassword);
+        baseMapper.update(null, updateWrapper);
+        logout(UserContext.getUsername(), UserContext.getToken());
+    }
+    
     @Override
     public void likeUser(String username, Integer increment) {
         if (increment == null || increment < 0) {

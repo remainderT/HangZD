@@ -3,6 +3,7 @@ package org.buaa.project.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import jakarta.servlet.ServletRequest;
 import org.buaa.project.common.convention.result.Result;
+import org.buaa.project.common.convention.result.Results;
 import org.buaa.project.dao.entity.UserDO;
 import org.buaa.project.dto.req.question.QuestionUploadReqDTO;
 import org.buaa.project.dto.req.user.AskUsersReqDTO;
@@ -10,6 +11,7 @@ import org.buaa.project.dto.req.user.UserLoginReqDTO;
 import org.buaa.project.dto.req.user.UserRegisterReqDTO;
 import org.buaa.project.dto.req.user.UserUpdateReqDTO;
 import org.buaa.project.dto.resp.*;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
@@ -62,7 +64,12 @@ public interface UserService extends IService<UserDO> {
      * 更新用户信息
      */
     void update(UserUpdateReqDTO requestParam);
-
+    
+    /**
+     * 更改密码
+     */
+    void changePassword(String oldPassword, String newPassword);
+    
     /**
      * 增加该用户被点赞数
      */

@@ -105,7 +105,16 @@ public class UserController {
         userService.update(requestParam);
         return Results.success();
     }
-
+    
+    /**
+     * 更改密码
+     */
+    @PutMapping("/api/hangzd/user/password")
+    public Result<Void> change_password(@RequestParam("oldPassword") String oldPassword, @RequestParam("newPassword") String newPassword) {
+        userService.changePassword(oldPassword, newPassword);
+        return Results.success();
+    }
+    
     /**
      * 增加该用户被点赞数
      */
