@@ -16,8 +16,8 @@ embedding_model = SentenceTransformer('multi-qa-mpnet-base-dot-v1')
 DB_CONFIG = {
     'host': 'localhost',
     'user': 'root',
-    'password': 'xxxxxx', #你的mysql数据库密码
-    'database': 'astroq',
+    'password': 'xxxxxx', #你的数据库密码
+    'database': 'hangzd',
     'port': 3306
 }
 
@@ -48,7 +48,7 @@ def load_users_from_mysql():
     connection = pymysql.connect(**DB_CONFIG)
     cursor = connection.cursor(pymysql.cursors.DictCursor)
 
-    cursor.execute("SELECT id, active_days, like_count, avatar, username, useful_count, tags FROM user")
+    cursor.execute("SELECT id, active_days, like_count, avatar, username, useful_count, tags FROM user WHERE user_type = 'user'")
     activity_data = cursor.fetchall()
     cursor.execute("SELECT user_id, content FROM answer")
     replies = cursor.fetchall()
