@@ -19,11 +19,11 @@ public class MessageRespDTO {
     /**
      *  消息发送者id
      */
-    private Long from_Id;
+    private Long fromId;
     /**
      *  消息接收者id
      */
-    private Long to_Id;
+    private Long toId;
     /**
      *  消息類型
      */
@@ -35,5 +35,5 @@ public class MessageRespDTO {
     /**
      * 創建時間
      */
-    private String create_time;
+    private String createTime;
 }

@@ -18,7 +18,7 @@ public class AnswerRespDTO {
     /**
      * 发布人id
      */
-    private Long user_id;
+    private Long userId;
     /**
      * 用户名
      */
@@ -26,7 +26,7 @@ public class AnswerRespDTO {
     /**
      * 对应问题的id
      */
-    private Long question_id;
+    private Long questionId;
     /**
      * 内容
      */
@@ -38,21 +38,25 @@ public class AnswerRespDTO {
     /**
      * 点赞数
      */
-    private Integer like_count;
+    private Integer likeCount;
     /**
      * 是否有用
      */
-    private Boolean is_useful;
+    private Integer useful;
     /**
      * 创建时间
      */
-    private String create_time;
+    private String createTime;
     /**
      * 更新时间
      */
-    private String update_time;
+    private String updateTime;
     /**
      * 是否被删除
      */
-    private Integer del_flag;
+    private Integer delFlag;
+    /**
+     * 是否已回答
+     */
+    private Integer answered;
 }

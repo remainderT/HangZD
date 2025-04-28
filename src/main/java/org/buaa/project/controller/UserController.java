@@ -4,13 +4,12 @@ import jakarta.servlet.ServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.buaa.project.common.convention.result.Result;
 import org.buaa.project.common.convention.result.Results;
+import org.buaa.project.dto.req.question.QuestionUploadReqDTO;
+import org.buaa.project.dto.req.user.AskUsersReqDTO;
 import org.buaa.project.dto.req.user.UserLoginReqDTO;
 import org.buaa.project.dto.req.user.UserRegisterReqDTO;
 import org.buaa.project.dto.req.user.UserUpdateReqDTO;
-import org.buaa.project.dto.resp.MessageRespDTO;
-import org.buaa.project.dto.resp.QuestionRespDTO;
-import org.buaa.project.dto.resp.UserLoginRespDTO;
-import org.buaa.project.dto.resp.UserRespDTO;
+import org.buaa.project.dto.resp.*;
 import org.buaa.project.service.UserService;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -156,7 +155,7 @@ public class UserController {
      * 获取当前用户的所有活跃回答列表
      */
     @GetMapping("/api/hangzd/user/active_answers")
-    public Result<List<MessageRespDTO>> getActiveAnswers(@RequestParam("username") String username) {
+    public Result<List<AnswerRespDTO>> getActiveAnswers(@RequestParam("username") String username) {
         return Results.success(userService.getActiveAnswers(username));
     }
 
@@ -174,6 +173,16 @@ public class UserController {
     @PutMapping("/api/hangzd/user/tags")
     public Result<Void> updateUserTags(@RequestParam("username") String username, @RequestParam String tags) {
         userService.updateTags(username, tags);
+        return Results.success();
+    }
+
+    /**
+     * 向指定的数个用户发出提问
+     */
+    @PutMapping("/api/hangzd/user/ask")
+    public Result<Void> askUsers(@RequestBody AskUsersReqDTO requestParam) {
+        System.out.println(requestParam);
+        userService.askUsers(requestParam);
         return Results.success();
     }
 }

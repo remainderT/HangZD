@@ -2,14 +2,15 @@ package org.buaa.project.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import jakarta.servlet.ServletRequest;
+import org.buaa.project.common.convention.result.Result;
 import org.buaa.project.dao.entity.UserDO;
+import org.buaa.project.dto.req.question.QuestionUploadReqDTO;
+import org.buaa.project.dto.req.user.AskUsersReqDTO;
 import org.buaa.project.dto.req.user.UserLoginReqDTO;
 import org.buaa.project.dto.req.user.UserRegisterReqDTO;
 import org.buaa.project.dto.req.user.UserUpdateReqDTO;
-import org.buaa.project.dto.resp.MessageRespDTO;
-import org.buaa.project.dto.resp.QuestionRespDTO;
-import org.buaa.project.dto.resp.UserLoginRespDTO;
-import org.buaa.project.dto.resp.UserRespDTO;
+import org.buaa.project.dto.resp.*;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -85,7 +86,7 @@ public interface UserService extends IService<UserDO> {
     /**
      * 获取当前用户的所有活跃回答列表
      */
-    List<MessageRespDTO> getActiveAnswers(String username);
+    List<AnswerRespDTO> getActiveAnswers(String username);
 
     /**
      * 获取当前用户的所有活跃问题列表
@@ -96,4 +97,6 @@ public interface UserService extends IService<UserDO> {
      * 更新当前用户的用户标签
      */
     void updateTags(String username, String newTags);
+
+    void askUsers(AskUsersReqDTO requestParam);
 }

@@ -18,7 +18,7 @@ public class QuestionRespDTO {
     /**
      * 分类ID
      */
-    private long category_Id;
+    private long categoryId;
     /**
      * 标题
      */
@@ -30,7 +30,7 @@ public class QuestionRespDTO {
     /**
      * 发布人ID
      */
-    private Long user_Id;
+    private Long userId;
     /**
      * 用户名
      */
@@ -42,10 +42,10 @@ public class QuestionRespDTO {
     /**
      * 浏览量
      */
-    private Integer view_count;
+    private Integer viewCount;
     /**
      * 创建时间
      */
-    private String create_time;
+    private String createTime;
 
 }

@@ -17,19 +17,20 @@ import org.buaa.project.common.consts.MailSendConstants;
 import org.buaa.project.common.convention.exception.ClientException;
 import org.buaa.project.common.convention.exception.ServiceException;
 import org.buaa.project.common.enums.UserErrorCodeEnum;
+import org.buaa.project.dao.entity.AnswerDO;
 import org.buaa.project.dao.entity.MessageDO;
 import org.buaa.project.dao.entity.QuestionDO;
 import org.buaa.project.dao.entity.UserDO;
+import org.buaa.project.dao.mapper.AnswerMapper;
 import org.buaa.project.dao.mapper.QuestionMapper;
 import org.buaa.project.dao.mapper.UserMapper;
 import org.buaa.project.dao.mapper.MessageMapper;
+import org.buaa.project.dto.req.question.QuestionUploadReqDTO;
+import org.buaa.project.dto.req.user.AskUsersReqDTO;
 import org.buaa.project.dto.req.user.UserLoginReqDTO;
 import org.buaa.project.dto.req.user.UserRegisterReqDTO;
 import org.buaa.project.dto.req.user.UserUpdateReqDTO;
-import org.buaa.project.dto.resp.MessageRespDTO;
-import org.buaa.project.dto.resp.QuestionRespDTO;
-import org.buaa.project.dto.resp.UserLoginRespDTO;
-import org.buaa.project.dto.resp.UserRespDTO;
+import org.buaa.project.dto.resp.*;
 import org.buaa.project.service.UserService;
 import org.buaa.project.toolkit.RandomGenerator;
 import org.redisson.api.RLock;
@@ -52,6 +53,8 @@ import java.util.concurrent.TimeUnit;
 
 import static org.buaa.project.common.consts.MailSendConstants.EMAIL_SUFFIX;
 import static org.buaa.project.common.consts.RedisCacheConstants.*;
+import static org.buaa.project.common.enums.AnswerErrorCodeEnum.ANSWER_POST_FAIL;
+import static org.buaa.project.common.enums.QuestionErrorCodeEnum.QUESTION_NULL;
 import static org.buaa.project.common.enums.ServiceErrorCodeEnum.MAIL_SEND_ERROR;
 import static org.buaa.project.common.enums.UserErrorCodeEnum.*;
 
@@ -72,7 +75,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
     private String from;
 
     @Autowired
-    private MessageMapper messageMapper;
+    private AnswerMapper answerMapper;
     @Autowired
     private QuestionMapper questionMapper;
 
@@ -283,10 +286,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
         } else if(userDO.getLikeCount() == null || userDO.getLikeCount() < 0) {
             throw new ClientException(USER_INVALID_DATA);
         }
+        //取出likeCount，更改后填回
+        Integer updated = userDO.getLikeCount() + increment;
+        UserDO updatedUserDO = UserDO.builder()
+                .likeCount(updated)
+                .build();
         LambdaUpdateWrapper<UserDO> updateWrapper = Wrappers.lambdaUpdate(UserDO.class)
-                .eq(UserDO::getUsername, username)
-                .setSql("like_count = like_count + " + increment);
-        baseMapper.update(null, updateWrapper);
+                .eq(UserDO::getId, userDO.getId());
+        baseMapper.update(updatedUserDO, updateWrapper);
 
         /*
           更新redis缓存
@@ -321,10 +328,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
         if (userDO.getLikeCount() - decrement < 0) {
             throw new ClientException(USER_INVALID_DECREMENT);
         }
+        Integer updated = userDO.getLikeCount() - decrement;
+        UserDO updatedUserDO = UserDO.builder()
+                .likeCount(updated)
+                .build();
         LambdaUpdateWrapper<UserDO> updateWrapper = Wrappers.lambdaUpdate(UserDO.class)
-                .eq(UserDO::getUsername, username)
-                .setSql("like_count = like_count - " + decrement);
-        baseMapper.update(null, updateWrapper);
+                .eq(UserDO::getId, userDO.getId());
+        baseMapper.update(updatedUserDO, updateWrapper);
         /*
           更新redis缓存
          */
@@ -404,7 +414,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
     }
 
     @Override
-    public List<MessageRespDTO> getActiveAnswers(String username) {
+    public List<AnswerRespDTO> getActiveAnswers(String username) {
         // 根据用户名查询用户信息
         LambdaQueryWrapper<UserDO> userQueryWrapper = Wrappers.lambdaQuery(UserDO.class)
                 .eq(UserDO::getUsername, username);
@@ -413,21 +423,22 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
             throw new ClientException(USER_NULL);
         }
 
-        // 从Message表中查询该用户的所有活跃回答（del_flag = 0）
-        LambdaQueryWrapper<MessageDO> messageQueryWrapper = Wrappers.lambdaQuery(MessageDO.class)
-                .eq(MessageDO::getFromId, userDO.getId())
-                .eq(MessageDO::getDelFlag, 0);
-        List<MessageDO> messageDOList = messageMapper.selectList(messageQueryWrapper);
-
-        // 将MessageDO转换为MessageRespDTO
-        List<MessageRespDTO> messageRespDTOS = new ArrayList<>();
-        for (MessageDO messageDO : messageDOList) {
-            MessageRespDTO messageRespDTO = new MessageRespDTO();
-            BeanUtils.copyProperties(messageDO, messageRespDTO);
-            messageRespDTOS.add(messageRespDTO);
+        // 从Answer表中查询该用户的所有活跃回答（del_flag = 0）
+        LambdaQueryWrapper<AnswerDO> answerQueryWrapper = Wrappers.lambdaQuery(AnswerDO.class)
+                .eq(AnswerDO::getUserId, userDO.getId())
+                .eq(AnswerDO::getDelFlag, 0);
+        List<AnswerDO> answerDOList = answerMapper.selectList(answerQueryWrapper);
+        //System.out.println(answerDOList);
+        // 将AnswerDO转换为AnswerRespDTO
+        List<AnswerRespDTO> answerRespDTOS = new ArrayList<>();
+        for (AnswerDO answerDO : answerDOList) {
+            AnswerRespDTO answerRespDTO = new AnswerRespDTO();
+            BeanUtils.copyProperties(answerDO, answerRespDTO);
+            answerRespDTOS.add(answerRespDTO);
+            //System.out.println(answerRespDTO);
         }
 
-        return messageRespDTOS;
+        return answerRespDTOS;
     }
 
     @Override
@@ -445,14 +456,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
         LambdaQueryWrapper<QuestionDO> questionQueryWrapper = Wrappers.lambdaQuery(QuestionDO.class)
                 .eq(QuestionDO::getUserId, userDO.getId())
                 .eq(QuestionDO::getDelFlag, 0);
-        //System.out.println("1");
         List<QuestionDO> questionDOList = questionMapper.selectList(questionQueryWrapper);
-        //System.out.println("2");
+        //System.out.println(questionDOList);
         List<QuestionRespDTO> questionRespDTOS = new ArrayList<>();
         for (QuestionDO questionDO : questionDOList) {
             QuestionRespDTO questionRespDTO = new QuestionRespDTO();
             BeanUtils.copyProperties(questionDO, questionRespDTO);
             questionRespDTOS.add(questionRespDTO);
+            //System.out.println(questionRespDTO);
         }
 
         return questionRespDTOS;
@@ -483,5 +494,53 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
                 .set(UserDO::getTags, tags);
         baseMapper.update(null, updateWrapper);
     }
-    
+
+    @Override
+    public void askUsers(AskUsersReqDTO requestParam) {
+        Long aid = requestParam.getAid();
+        Long qid = requestParam.getQid();
+        List<Long> ids = requestParam.getIds();
+        System.out.println(aid);
+        System.out.println(qid);
+        System.out.println(ids);
+        // 检查提问者是否存在
+        LambdaQueryWrapper<UserDO> askerQueryWrapper = Wrappers.lambdaQuery(UserDO.class)
+                .eq(UserDO::getId, aid);
+        UserDO asker = baseMapper.selectOne(askerQueryWrapper);
+        System.out.println(asker);
+        if (asker == null) {
+            throw new ClientException(USER_NULL);
+        }
+        // 检查问题是否存在
+        LambdaQueryWrapper<QuestionDO> questionQueryWrapper = Wrappers.lambdaQuery(QuestionDO.class)
+                .eq(QuestionDO::getId, qid);
+        QuestionDO question = questionMapper.selectOne(questionQueryWrapper);
+        if (question == null) {
+            throw new ClientException(QUESTION_NULL);
+        }
+
+        for(Long answerid: ids) {
+            // 检查回答者是否存在
+            LambdaQueryWrapper<UserDO> answererQueryWrapper = Wrappers.lambdaQuery(UserDO.class)
+                    .eq(UserDO::getId, answerid);
+            UserDO answerer = baseMapper.selectOne(answererQueryWrapper);
+            if (answerer == null) {
+                throw new ClientException(USER_NULL);
+            }
+
+            //根据回答者id和提问生成answerDO
+            AnswerDO answerDO = new AnswerDO();
+            answerDO.setUserId(answerid);
+            answerDO.setUsername(answerer.getUsername());
+            answerDO.setQuestionId(qid);
+            //answerDO.setContent(question.getContent());
+            //插入Answer表
+            int inserted = answerMapper.insert(answerDO);
+            if (inserted < 1) {
+                throw new ClientException(ANSWER_POST_FAIL);
+            }
+        }
+
+    }
+
 }

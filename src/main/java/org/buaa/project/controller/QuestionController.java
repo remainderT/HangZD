@@ -6,13 +6,12 @@ import org.buaa.project.common.convention.result.Results;
 import org.buaa.project.dto.req.question.QuestionSolveReqDTO;
 import org.buaa.project.dto.req.question.QuestionUpdateReqDTO;
 import org.buaa.project.dto.req.question.QuestionUploadReqDTO;
+import org.buaa.project.dto.resp.QuestionRespDTO;
+import org.buaa.project.dto.resp.UserRespDTO;
 import org.buaa.project.service.QuestionService;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * 问题管理控制层
@@ -57,6 +56,22 @@ public class QuestionController {
     public Result<Void> resolvedQuestion(@RequestBody QuestionSolveReqDTO requestParam) {
         questionService.resolvedQuestion(requestParam);
         return Results.success();
+    }
+
+    /**
+     * 返回指定id问题的详细信息
+     */
+    @GetMapping("/api/hangzd/question/{id}")
+    public Result<QuestionRespDTO> getQuestionById(@PathVariable("id") Long id) {
+        return Results.success(questionService.getQuestionById(id));
+    }
+
+    /**
+     * 提供问题获取推荐回答的用户信息
+     */
+    @GetMapping("/api/user/findAnswerers")
+    public Result<List<UserRespDTO>> findAnswerers(@RequestParam("questionId") Long questionId) {
+        return Results.success(questionService.findAnswerers(questionId));
     }
 }
 

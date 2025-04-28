@@ -59,6 +59,7 @@ CREATE TABLE `answer` (
                            `create_time` datetime     DEFAULT NULL COMMENT '创建时间',
                            `update_time` datetime     DEFAULT NULL COMMENT '修改时间',
                            `del_flag`    tinyint(1)   DEFAULT NULL COMMENT '删除标识 0：未删除 1：已删除',
+                           `answered` tinyint(1)   DEFAULT 0 COMMENT '是否已回答 0：未回答 1：已回答',
                            PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='回答';
 

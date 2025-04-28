@@ -50,10 +50,10 @@ public class AnswerServiceImpl extends ServiceImpl<AnswerMapper, AnswerDO> imple
         if (questionMapper.selectById(answer.getQuestion_id()) == null) {
             throw new ServiceException(QuestionErrorCodeEnum.QUESTION_NULL);
         }
-        answerDO.setQuestion_id(answer.getQuestion_id());
+        answerDO.setQuestionId(answer.getQuestion_id());
         answerDO.setContent(answer.getContent());
         answerDO.setImages(answer.getImages());
-        answerDO.setLike_count(0);
+        answerDO.setLikeCount(0);
         answerDO.setUseful(0);
         //写入Answer表
         int inserted = baseMapper.insert(answerDO);

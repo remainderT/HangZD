@@ -32,7 +32,7 @@ public class AnswerDO extends BaseDO {
     /**
      * question_id - the ID of the question this comment responds to
      */
-    private Long question_id;
+    private Long questionId;
 
     /**
      * content - the content of the comment, with a maximum length of 1024 characters
@@ -45,11 +45,12 @@ public class AnswerDO extends BaseDO {
      */
     private String images;
 
-    private Integer like_count;
+    private Integer likeCount;
 
     /**
      * useful - indicates if the comment is marked as useful, 1 for true, 0 for false
      */
     private Integer useful;
+    private Integer answered;
 
 }

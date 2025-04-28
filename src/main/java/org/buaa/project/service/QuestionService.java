@@ -1,10 +1,16 @@
 package org.buaa.project.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.buaa.project.common.convention.result.Result;
 import org.buaa.project.dao.entity.QuestionDO;
 import org.buaa.project.dto.req.question.QuestionSolveReqDTO;
 import org.buaa.project.dto.req.question.QuestionUpdateReqDTO;
 import org.buaa.project.dto.req.question.QuestionUploadReqDTO;
+import org.buaa.project.dto.resp.QuestionRespDTO;
+import org.buaa.project.dto.resp.UserRespDTO;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.List;
 
 /**
  * 问题接口层
@@ -41,4 +47,13 @@ public interface QuestionService extends IService<QuestionDO> {
      */
     void checkQuestionOwner(Long id);
 
+    /**
+     * 返回指定id问题的详细信息
+     */
+    QuestionRespDTO getQuestionById(Long id);
+
+    /**
+     * 回答推荐
+     */
+    List<UserRespDTO> findAnswerers( Long questionId);
 }

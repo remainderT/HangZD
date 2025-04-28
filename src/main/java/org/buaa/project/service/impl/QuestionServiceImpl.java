@@ -14,11 +14,16 @@ import org.buaa.project.dao.mapper.QuestionMapper;
 import org.buaa.project.dto.req.question.QuestionSolveReqDTO;
 import org.buaa.project.dto.req.question.QuestionUpdateReqDTO;
 import org.buaa.project.dto.req.question.QuestionUploadReqDTO;
+import org.buaa.project.dto.resp.QuestionRespDTO;
+import org.buaa.project.dto.resp.UserRespDTO;
 import org.buaa.project.service.QuestionService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import static org.buaa.project.common.enums.QuestionErrorCodeEnum.QUESTION_NULL;
 import static org.buaa.project.common.enums.QuestionErrorCodeEnum.QUESTION_USER_INCORRECT;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -88,6 +93,21 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, QuestionDO>
         if (!Objects.equals(currentUserId, question.getUserId())) {
             throw new ServiceException(QUESTION_USER_INCORRECT);
         }
+    }
+
+    @Override
+    public QuestionRespDTO getQuestionById(Long id) {
+        checkQuestionExist(id);
+        QuestionDO question = baseMapper.selectById(id);
+        QuestionRespDTO result = new QuestionRespDTO();
+        BeanUtils.copyProperties(question, result);
+        return result;
+    }
+
+    @Override
+    public List<UserRespDTO> findAnswerers(Long questionId){
+        //TODO
+        return new ArrayList<>();
     }
 
 }
