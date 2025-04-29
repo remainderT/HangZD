@@ -3,6 +3,8 @@ package org.buaa.project.common.biz.user;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -16,6 +18,7 @@ import org.buaa.project.dao.mapper.UserMapper;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -38,9 +41,15 @@ public class RefreshTokenFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         String username = httpServletRequest.getHeader("username");
+        String requestURI = httpServletRequest.getRequestURI();
         String token = httpServletRequest.getHeader("token");
         //System.out.println(username);
         //System.out.println(token);
+        if(requestURI.equals("/api/hangzd/user/last-active-time")) {
+            //System.out.println("active time");
+            filterChain.doFilter(servletRequest, servletResponse);
+            return;
+        }
         if (StrUtil.isBlank(token) || StrUtil.isBlank(username)) {
             filterChain.doFilter(servletRequest, servletResponse);
             return;
@@ -63,6 +72,13 @@ public class RefreshTokenFilter implements Filter {
                 token(token).
                 build();
         UserContext.setUser(userInfoDTO);
+
+        //更新数据库中last_active_time字段
+        userDO.setLastActiveTime(new Date(System.currentTimeMillis()));
+        LambdaUpdateWrapper<UserDO> updateWrapper = Wrappers.lambdaUpdate(UserDO.class)
+                .eq(UserDO::getUsername, username)
+                .set(UserDO::getLastActiveTime, userDO.getLastActiveTime());
+        userMapper.update(userDO, updateWrapper);
 
         stringRedisTemplate.expire(USER_LOGIN_KEY + username, USER_LOGIN_EXPIRE_KEY, TimeUnit.DAYS);
         

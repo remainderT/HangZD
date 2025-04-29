@@ -6,6 +6,8 @@ import lombok.Data;
 import org.buaa.project.common.database.BaseDO;
 import org.buaa.project.toolkit.sensitive.SensitiveField;
 
+import java.util.Date;
+
 /**
  * 用户持久层实体
  */
@@ -78,4 +80,8 @@ public class UserDO extends BaseDO {
      * 用户标签
      */
     private String tags;
+    /**
+     * 最新活跃时间
+     */
+    private Date lastActiveTime;
 }

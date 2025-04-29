@@ -45,10 +45,10 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static org.buaa.project.common.consts.MailSendConstants.EMAIL_SUFFIX;
@@ -168,6 +168,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
             userDO = baseMapper.selectOne(Wrappers.lambdaQuery(UserDO.class)
                     .eq(UserDO::getUsername, requestParam.getUsername()));
             stringRedisTemplate.opsForValue().set(USER_INFO_KEY + requestParam.getUsername(), JSON.toJSONString(userDO));
+            //删除redis的验证码
+            stringRedisTemplate.delete(key);
+            //删除redis的频繁发送验证码的key
+            String frequentKey = USER_CODE_TO_FREQUENT+ requestParam.getMail().replace(EMAIL_SUFFIX,"");
+            stringRedisTemplate.delete(frequentKey);
         } catch (DuplicateKeyException ex) {
             throw new ClientException(USER_EXIST);
         } finally {
@@ -211,6 +216,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
          * Key：user:login:username
          * Value: token标识
          */
+
+        //数据库中last_active_time字段更新
+        //
+        userDO.setLastActiveTime(new Date(System.currentTimeMillis()));
+        LambdaUpdateWrapper<UserDO> updateWrapper = Wrappers.lambdaUpdate(UserDO.class)
+                .eq(UserDO::getUsername, requestParam.getUsername())
+                .set(UserDO::getLastActiveTime, userDO.getLastActiveTime());
+        baseMapper.update(null, updateWrapper);
         String hasLogin = stringRedisTemplate.opsForValue().get(USER_LOGIN_KEY + requestParam.getUsername());
         if (StrUtil.isNotEmpty(hasLogin)) {
             // throw new ClientException(USER_REPEATED_LOGIN);
@@ -560,6 +573,22 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
             }
         }
 
+    }
+
+    @Override
+    public Date getLastActiveTime(Long id) {
+        LambdaQueryWrapper<UserDO> queryWrapper = Wrappers.lambdaQuery(UserDO.class)
+                .eq(UserDO::getId, id);
+        UserDO userDO = baseMapper.selectOne(queryWrapper);
+        if (userDO == null) {
+            throw new ClientException(USER_NULL);
+        }
+        //改为东八区时区返回
+        Instant utcInstant = userDO.getLastActiveTime().toInstant();
+        ZonedDateTime beijingTime = utcInstant.atZone(ZoneId.of("Asia/Shanghai"));
+        Date beijingDate = Date.from(beijingTime.toInstant());
+        //System.out.println(beijingDate);
+        return beijingDate;
     }
 
 }
