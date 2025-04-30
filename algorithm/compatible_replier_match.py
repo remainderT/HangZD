@@ -52,7 +52,6 @@ def load_users_from_mysql():
     activity_data = cursor.fetchall()
     cursor.execute("SELECT user_id, content FROM answer")
     replies = cursor.fetchall()
-
     users = []
     for user in activity_data:
         id = user["id"]
@@ -61,11 +60,11 @@ def load_users_from_mysql():
         avatar = user["avatar"]
         username = user["username"]
         useful_count = user["useful_count"]
-        tags = user["tags"].split(',')
+        tags = user["tags"].split(',') if user["tags"] else []
 
         history_replies = []
         for reply in replies:
-            if reply["user_id"] == id:
+            if reply["user_id"] == id and reply["content"]:
                 history_replies.append(reply["content"])
         users.append({
             "id": id,
