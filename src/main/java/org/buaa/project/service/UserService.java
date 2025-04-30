@@ -14,6 +14,7 @@ import org.buaa.project.dto.resp.*;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -106,4 +107,6 @@ public interface UserService extends IService<UserDO> {
     void updateTags(String username, String newTags);
 
     void askUsers(AskUsersReqDTO requestParam);
+
+    Date getLastActiveTime(Long id);
 }

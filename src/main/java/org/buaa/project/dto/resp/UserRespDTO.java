@@ -52,7 +52,12 @@ public class UserRespDTO {
      */
     @JsonSerialize(using = PhoneDesensitizationSerializer.class)
     private String phone;
-    
+
+    /**
+     * 头像
+     */
+    private String avatar;
+
     /**
      * 用户标签
      */

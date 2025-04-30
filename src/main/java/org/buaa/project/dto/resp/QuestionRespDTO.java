@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 /**
  * 返回消息
  */
@@ -46,6 +48,6 @@ public class QuestionRespDTO {
     /**
      * 创建时间
      */
-    private String createTime;
+    private Date createTime;
 
 }

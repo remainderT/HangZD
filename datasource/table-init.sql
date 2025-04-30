@@ -23,6 +23,7 @@ CREATE TABLE `user` (
                         `update_time` datetime     DEFAULT NULL COMMENT '修改时间',
                         `active_days`   int     DEFAULT 1      not null comment '活跃天数',
                         `del_flag`    tinyint(1)   DEFAULT NULL COMMENT '删除标识 0：未删除 1：已删除',
+                        `last_active_time` datetime     DEFAULT NULL COMMENT '最后活跃时间',
                         PRIMARY KEY (`id`),
                         UNIQUE KEY idx_unique_username (username) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户和管理员';

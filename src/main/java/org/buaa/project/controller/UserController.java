@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Date;
 import java.util.List;
 
 
@@ -193,6 +194,14 @@ public class UserController {
         System.out.println(requestParam);
         userService.askUsers(requestParam);
         return Results.success();
+    }
+
+    /**
+     * 获取某用户最后一次活跃时间
+     */
+    @GetMapping("/api/hangzd/user/last-active-time")
+    public Result<Date> getLastActiveTime(@RequestParam("id") Long id) {
+        return Results.success(userService.getLastActiveTime(id));
     }
 }
 
