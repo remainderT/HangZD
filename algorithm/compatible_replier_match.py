@@ -16,7 +16,7 @@ embedding_model = SentenceTransformer('multi-qa-mpnet-base-dot-v1')
 DB_CONFIG = {
     'host': 'localhost',
     'user': 'root',
-    'password': 'xxxxxx', #你的数据库密码
+    'password': 'xxxxxx', # 你的数据库密码
     'database': 'hangzd',
     'port': 3306
 }
