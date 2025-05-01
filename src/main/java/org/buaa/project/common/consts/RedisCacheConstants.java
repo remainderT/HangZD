@@ -14,6 +14,7 @@ public class RedisCacheConstants {
      * 用户注册验证码缓存
      */
     public static final String USER_REGISTER_CODE_KEY = "hangzd:user:register:code:";
+
     /**
      * 用户注册验证码发送计时
      */
@@ -44,6 +45,9 @@ public class RedisCacheConstants {
      */
     public static final String USER_LOGIN_CAPTCHA_KEY = "hangzd:user:login:captcha:";
 
-
+    /**
+     * 消息发送流缓存标识
+     */
+    public static final String MESSAGE_SEND_STREAM_KEY = "hangzd:stream:message-send";
 
 }
