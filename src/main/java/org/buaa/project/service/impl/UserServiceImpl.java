@@ -9,6 +9,8 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.servlet.ServletRequest;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.buaa.project.common.biz.user.UserContext;
 import org.buaa.project.common.consts.MailSendConstants;
@@ -20,7 +22,8 @@ import org.buaa.project.common.enums.UserErrorCodeEnum;
 import org.buaa.project.dao.entity.UserDO;
 import org.buaa.project.dao.mapper.UserMapper;
 import org.buaa.project.dto.req.user.*;
-import org.buaa.project.dto.resp.*;
+import org.buaa.project.dto.resp.UserLoginRespDTO;
+import org.buaa.project.dto.resp.UserRespDTO;
 import org.buaa.project.service.UserActionService;
 import org.buaa.project.service.UserService;
 import org.buaa.project.toolkit.RandomGenerator;
@@ -35,7 +38,9 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import static org.buaa.project.common.consts.MailSendConstants.EMAIL_SUFFIX;
@@ -153,8 +158,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
 
     @Override
     public UserLoginRespDTO login(UserLoginReqDTO requestParam, ServletRequest request) {
-        //验证码还没搞
-        /*HttpServletRequest httpRequest = (HttpServletRequest) request;
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
         Cookie[] cookies = httpRequest.getCookies();
         String captchaOwner = "";
         if (cookies != null) {
@@ -169,7 +173,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
         if (StrUtil.isBlank(code) || !code.equalsIgnoreCase(requestParam.getCode())) {
             throw new ClientException(USER_LOGIN_CAPTCHA_ERROR);
         }
-*/
+
         if (!hasUsername(requestParam.getUsername())) {
             throw new ClientException(USER_NAME_NULL);
         }
@@ -182,15 +186,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
             throw new ClientException(USER_PASSWORD_ERROR);
         }
 
+        //数据库中last_active_time字段更新
+        userDO.setLastActiveTime(new Date(System.currentTimeMillis()));
+        baseMapper.updateById(userDO);
+
         /**
          * String
          * Key：user:login:username
          * Value: token标识
          */
-
-        //数据库中last_active_time字段更新
-        userDO.setLastActiveTime(new Date(System.currentTimeMillis()));
-        baseMapper.updateById(userDO);
         String hasLogin = stringRedisTemplate.opsForValue().get(USER_LOGIN_KEY + requestParam.getUsername());
         if (StrUtil.isNotEmpty(hasLogin)) {
             // throw new ClientException(USER_REPEATED_LOGIN);
