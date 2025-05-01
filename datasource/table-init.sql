@@ -84,13 +84,28 @@ CREATE TABLE `message` (
 
 DROP TABLE IF EXISTS `conversation`;
 CREATE TABLE `conversation` (
-    `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-    `user_1` bigint(20) NOT NULL COMMENT '用户1ID',
-    `user_2` bigint(20) NOT NULL COMMENT '用户2ID',
-    `status` tinyint(1) NOT NULL DEFAULT 0 COMMENT '可见状态 1 user1 删除 2 user2 删除 3 都删除' ,
-    `create_time` datetime DEFAULT NULL COMMENT '创建时间',
-    `update_time` datetime DEFAULT NULL COMMENT '修改时间',
-    `del_flag` tinyint(1) DEFAULT NULL COMMENT '删除标识 0：未删除 1：已删除',
-    PRIMARY KEY (`id`)
+                            `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
+                            `user_1` bigint(20) NOT NULL COMMENT '用户1ID',
+                            `user_2` bigint(20) NOT NULL COMMENT '用户2ID',
+                            `status` tinyint(1) NOT NULL DEFAULT 0 COMMENT '可见状态 1 user1 删除 2 user2 删除 3 都删除' ,
+                            `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+                            `update_time` datetime DEFAULT NULL COMMENT '修改时间',
+                            `del_flag` tinyint(1) DEFAULT NULL COMMENT '删除标识 0：未删除 1：已删除',
+                            PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='会话';
 
+DROP TABLE IF EXISTS `user_action`;
+CREATE TABLE `user_action` (
+                        `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
+                        `user_id` bigint(20)  unsigned NOT NULL DEFAULT '0' COMMENT '用户ID',
+                        `entity_type` ENUM('user', 'question', 'answer') NOT NULL  COMMENT '实体类型',
+                        `entity_id` bigint(20)  unsigned NOT NULL DEFAULT '0' COMMENT '实体ID',
+                        `collect_stat` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '收藏状态: 0-未收藏，1-已收藏',
+                        `like_stat` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '点赞状态: 0-未点赞，1-点赞',
+                        `last_view_time` datetime     DEFAULT NULL COMMENT '上次浏览时间',
+                        `create_time` datetime     DEFAULT NULL COMMENT '创建时间',
+                        `update_time` datetime     DEFAULT NULL COMMENT '修改时间',
+                        `del_flag`   tinyint(1)    DEFAULT NULL COMMENT '删除标识 0：未删除 1：已删除',
+                        PRIMARY KEY (`id`),
+                        KEY `idx_user_entity_type_id` (`user_id`, `entity_type`, `entity_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户行为';
