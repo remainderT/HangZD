@@ -5,10 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.buaa.project.common.convention.result.Result;
 import org.buaa.project.common.convention.result.Results;
 import org.buaa.project.dto.req.question.QuestionUploadReqDTO;
-import org.buaa.project.dto.req.user.AskUsersReqDTO;
-import org.buaa.project.dto.req.user.UserLoginReqDTO;
-import org.buaa.project.dto.req.user.UserRegisterReqDTO;
-import org.buaa.project.dto.req.user.UserUpdateReqDTO;
+import org.buaa.project.dto.req.user.*;
 import org.buaa.project.dto.resp.*;
 import org.buaa.project.service.UserService;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -34,18 +31,11 @@ public class UserController {
     private final UserService userService;
 
     /**
-     * 根据用户名查找用户信
+     * 根据用户名查找用户信息
      */
     @GetMapping("/api/hangzd/user/{username}")
     public Result<UserRespDTO> getUserByUsername(@PathVariable("username") String username) {
         return Results.success(userService.getUserByUsername(username));
-    }
-    /**
-     * 根据用户ID查找用户信息
-     */
-    @GetMapping("/api/hangzd/user/id/{id}")
-    public Result<UserRespDTO> getUserById(@PathVariable("id") Long id) {
-        return Results.success(userService.getUserById(id));
     }
 
     /**
@@ -111,97 +101,28 @@ public class UserController {
      * 更改密码
      */
     @PutMapping("/api/hangzd/user/password")
-    public Result<Void> change_password(@RequestParam("oldPassword") String oldPassword, @RequestParam("newPassword") String newPassword) {
-        userService.changePassword(oldPassword, newPassword);
+    public Result<Void> changePassword(@RequestBody ChangePasswordReqDTO requestParam) {
+        userService.changePassword(requestParam);
         return Results.success();
     }
     
     /**
-     * 增加该用户被点赞数
+     * 点赞用户
      */
     @PutMapping("/api/hangzd/user/like")
-    public Result<Void> likeUser(@RequestParam("username") String username, @RequestParam("increment") Integer increment) {
-        userService.likeUser(username, increment);
+    public Result<Void> likeUser(@RequestBody LikeUserReqDTO requestParam) {
+        userService.likeUser(requestParam);
         return Results.success();
-    }
-
-    /**
-     * 减少该用户被点赞数
-     */
-    @PutMapping("/api/hangzd/user/dislike")
-    public Result<Void> dislikeUser(@RequestParam("username") String username, @RequestParam("decrement") Integer decrement) {
-        userService.dislikeUser(username, decrement);
-        return Results.success();
-    }
-
-    /**
-     * 添加/取消一个收藏
-     */
-    @PutMapping("/api/hangzd/user/collect")
-    public Result<Void> collectUpdate(@RequestParam("collect") Boolean collect) {
-        userService.collectUpdate(collect);
-        return Results.success();
-    }
-
-    /**
-     * 增加/减少该用户评论有用数
-     */
-    @PutMapping("/api/hangzd/user/useful")
-    public Result<Void> usefulUpdate(@RequestParam("username") String username, @RequestParam("useful") Boolean useful) {
-        userService.usefulUpdate(username,useful);
-        return Results.success();
-    }
-
-    /**
-     * 找回密码
-     */
-    /*@PostMapping("/api/hangzd/user/findback-password")
-    public Result<Void> findbackPassword(@RequestBody UserRegisterReqDTO requestParam) {
-        //TODO
-        return Results.success();
-    }*/
-
-    /**
-     * 获取当前用户的所有活跃回答列表
-     */
-    @GetMapping("/api/hangzd/user/active_answers")
-    public Result<List<AnswerRespDTO>> getActiveAnswers(@RequestParam("username") String username) {
-        return Results.success(userService.getActiveAnswers(username));
-    }
-
-    /**
-     * 获取当前用户的所有活跃提问列表
-     */
-    @GetMapping("/api/hangzd/user/active_questions")
-    public Result<List<QuestionRespDTO>> getActiveQuestions(@RequestParam("username") String username) {
-        return Results.success(userService.getActiveQuestions(username));
     }
     
     /**
      * 更新当前用户的标签
      */
     @PutMapping("/api/hangzd/user/tags")
-    public Result<Void> updateUserTags(@RequestParam("username") String username, @RequestParam String tags) {
-        userService.updateTags(username, tags);
+    public Result<Void> updateUserTags(@RequestBody UpdateUserTagsReqDTO requestParam) {
+        userService.updateTags(requestParam);
         return Results.success();
     }
 
-    /**
-     * 向指定的数个用户发出提问
-     */
-    @PutMapping("/api/hangzd/user/ask")
-    public Result<Void> askUsers(@RequestBody AskUsersReqDTO requestParam) {
-        System.out.println(requestParam);
-        userService.askUsers(requestParam);
-        return Results.success();
-    }
-
-    /**
-     * 获取某用户最后一次活跃时间
-     */
-    @GetMapping("/api/hangzd/user/last-active-time")
-    public Result<Date> getLastActiveTime(@RequestParam("id") Long id) {
-        return Results.success(userService.getLastActiveTime(id));
-    }
 }
 

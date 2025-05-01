@@ -14,6 +14,7 @@ import org.buaa.project.service.AnswerService;
 import org.buaa.project.service.MessageService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -51,7 +52,6 @@ public class AnswerController {
         return Results.success();
     }
 
-
     /**
      * 删除回答
      */
@@ -59,5 +59,13 @@ public class AnswerController {
     public Result<Void> deleteAnswer(@RequestParam("id") Long Id) {
         answerService.deleteAnswer(Id);
         return Results.success();
+    }
+
+    /**
+     * 获取当前用户的回答列表
+     */
+    @GetMapping("/api/hangzd/answers/my")
+    public Result<List<AnswerRespDTO>> getActiveAnswers() {
+        return Results.success(new ArrayList<>());
     }
 }

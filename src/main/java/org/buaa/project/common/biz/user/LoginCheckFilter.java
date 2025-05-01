@@ -2,11 +2,7 @@ package org.buaa.project.common.biz.user;
 
 import com.alibaba.fastjson2.JSON;
 import com.google.common.collect.Lists;
-import jakarta.servlet.Filter;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
+import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +13,6 @@ import org.buaa.project.common.convention.result.Results;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
-import java.util.Locale;
 
 import static org.buaa.project.common.enums.UserErrorCodeEnum.USER_TOKEN_NULL;
 
@@ -33,8 +28,6 @@ LoginCheckFilter implements Filter {
             "/api/hangzd/user/send-code", //注册时发送验证码
             "/api/hangzd/user/captcha", //登录时获取验证码
             "/api/hangzd/user/last-active-time"
-            /*"/api/answerly/v1/user/send-code",
-            "/api/answerly/v1/user/login"*/
     );
 
     private boolean requireLogin(String URI, String method) {
