@@ -101,10 +101,13 @@ def recommend():
     scored_users = []
 
     for user in users:
-        user_vec = weighted_user_embedding(user)
-        sim_score = cosine_similarity([q_vec], [user_vec])[0][0]
-        act_score = compute_activity_score(user)
-        final_score = sim_score * act_score
+        if len(user["tags"]) == 0 and len(user["history_replies"]) == 0:
+            final_score = 0
+        else:
+            user_vec = weighted_user_embedding(user)
+            sim_score = cosine_similarity([q_vec], [user_vec])[0][0]
+            act_score = compute_activity_score(user)
+            final_score = sim_score * act_score
         scored_users.append((final_score, user))
 
     top_users = sorted(scored_users, key=lambda x: x[0], reverse=True)[:10]
