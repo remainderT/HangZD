@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
 import org.buaa.project.toolkit.serialize.PhoneDesensitizationSerializer;
 
-import java.util.List;
-
 /**
  * 用户信息返回参数响应
  */
