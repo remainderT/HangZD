@@ -31,7 +31,6 @@ def translate_zh_to_en(text):
 def weighted_user_embedding(user, tag_weight=0.7, history_weight=0.3):
     tag_vec = 0
     history_vec = 0
-
     if len(user["tags"]) > 0:
         tag_text = translate_zh_to_en(user["tags"])
         tag_vec = embedding_model.encode(tag_text)
