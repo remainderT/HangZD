@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
 
-import static org.buaa.project.common.enums.ConversationErrorCodeEnum.*;
+import static org.buaa.project.common.enums.MessageErrorCodeEnum.*;
 
 /**
  * 会话接口实现层
@@ -98,8 +98,6 @@ public class ConversationServiceImpl extends ServiceImpl<ConversationMapper, Con
         
         ConversationDO conversation = BeanUtil.toBean(requestParam, ConversationDO.class);
         conversation.setUser1(currentUserId);
-        conversation.setStatus(0); // 初始状态：双方都可见
-        conversation.setDelFlag(0);
         baseMapper.insert(conversation);
     }
 

@@ -7,19 +7,22 @@ import lombok.Getter;
  */
 @Getter
 public enum EntityTypeEnum {
-    
-    USER("user", "用户"),
 
-    QUESTION("question", "问题"),
+    SYSTEM("system"),
 
-    ANSWER("answer", "回答");
-    
-    private final String code;
+    QUESTION("question"),
 
-    private final String desc;
-    
-    EntityTypeEnum(String code, String desc) {
-        this.code = code;
-        this.desc = desc;
+    ANSWER("answer"),
+
+    USER("user");
+
+    private final String type;
+
+    EntityTypeEnum(String type) {
+        this.type = type;
+    }
+
+    public String type() {
+        return type;
     }
 } 

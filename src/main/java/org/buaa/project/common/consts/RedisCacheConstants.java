@@ -50,4 +50,39 @@ public class RedisCacheConstants {
      */
     public static final String MESSAGE_SEND_STREAM_KEY = "hangzd:stream:message-send";
 
+    /**
+     * 题目统计信息缓存标识
+     */
+    public static final String QUESTION_COUNT_KEY = "hangzd:question:count:";
+
+    /**
+     * 回答统计信息缓存标识
+     */
+    public static final String ANSWER_COUNT_KEY = "hangzd:answer:count:";
+
+    /**
+     * 题目点赞集合
+     */
+    public static final String QUESTION_LIKE_SET_KEY = "hangzd:question:like:";
+
+    /**
+     * 题目收藏集合
+     */
+    public static final String QUESTION_COLLECT_SET_KEY = "hangzd:question:collect:";
+
+    /**
+     * 回答点赞集合
+     */
+    public static final String ANSWER_LIKE_SET_KEY = "hangzd:answer:like:";
+
+    /**
+     * 用户统计信息缓存标识
+     */
+    public static final String USER_COUNT_KEY = "hangzd:user:count:";
+
+    /**
+     * 用户行为分布式锁
+     */
+    public static final String USER_ACTION_KEY = "hangzd:user:action:";
+
 }

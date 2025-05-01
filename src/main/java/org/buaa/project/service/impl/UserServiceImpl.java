@@ -14,11 +14,14 @@ import org.buaa.project.common.biz.user.UserContext;
 import org.buaa.project.common.consts.MailSendConstants;
 import org.buaa.project.common.convention.exception.ClientException;
 import org.buaa.project.common.convention.exception.ServiceException;
+import org.buaa.project.common.enums.EntityTypeEnum;
+import org.buaa.project.common.enums.UserActionTypeEnum;
 import org.buaa.project.common.enums.UserErrorCodeEnum;
 import org.buaa.project.dao.entity.UserDO;
 import org.buaa.project.dao.mapper.UserMapper;
 import org.buaa.project.dto.req.user.*;
 import org.buaa.project.dto.resp.*;
+import org.buaa.project.service.UserActionService;
 import org.buaa.project.service.UserService;
 import org.buaa.project.toolkit.RandomGenerator;
 import org.redisson.api.RLock;
@@ -52,6 +55,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
     private final RedissonClient redissonClient;
 
     private final StringRedisTemplate stringRedisTemplate;
+
+    private final UserActionService userActionService;
 
     @Value("${spring.mail.username}")
     private String from;
@@ -266,7 +271,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
     
     @Override
     public void likeUser(LikeUserReqDTO requestParam) {
-
+        Long id = requestParam.getId();
+        userActionService.collectAndLike(EntityTypeEnum.USER, id, UserActionTypeEnum.LIKE);
     }
     
     @Override

@@ -6,11 +6,13 @@ import org.buaa.project.common.convention.result.Results;
 import org.buaa.project.dto.req.question.QuestionSolveReqDTO;
 import org.buaa.project.dto.req.question.QuestionUpdateReqDTO;
 import org.buaa.project.dto.req.question.QuestionUploadReqDTO;
+import org.buaa.project.dto.req.question.AskUsersReqDTO;
 import org.buaa.project.dto.resp.QuestionRespDTO;
 import org.buaa.project.dto.resp.UserRespDTO;
 import org.buaa.project.service.QuestionService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -72,6 +74,23 @@ public class QuestionController {
     @GetMapping("/api/user/findAnswerers")
     public Result<List<UserRespDTO>> findAnswerers(@RequestParam("questionId") Long questionId) {
         return Results.success(questionService.findAnswerers(questionId));
+    }
+
+    /**
+     * 获取当前用户的提问列表
+     */
+    @GetMapping("/api/hangzd/questions/my")
+    public Result<List<QuestionRespDTO>> getActiveQuestions() {
+        return Results.success(new ArrayList<>());
+    }
+
+    /**
+     * 向指定的数个用户发出提问
+     */
+    @PutMapping("/api/hangzd/user/ask")
+    public Result<Void> askUsers(@RequestBody AskUsersReqDTO requestParam) {
+        System.out.println(requestParam);
+        return Results.success();
     }
 }
 

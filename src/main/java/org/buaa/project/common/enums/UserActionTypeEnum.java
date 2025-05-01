@@ -1,0 +1,23 @@
+package org.buaa.project.common.enums;
+
+/**
+ * 用户行为类型枚举
+ */
+public enum UserActionTypeEnum {
+
+    COLLECT("collect"),
+
+    ANSWER( "answer"),
+
+    LIKE( "like");
+
+    private final String type;
+
+    UserActionTypeEnum(String type) {
+        this.type = type;
+    }
+
+    public String type() {
+        return type;
+    }
+}

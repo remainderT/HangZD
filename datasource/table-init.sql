@@ -37,6 +37,8 @@ CREATE TABLE `question` (
                             `user_id` bigint(20)       NOT NULL COMMENT '发布人ID',
                             `username` varchar(256)    NOT NULL COMMENT '用户名',
                             `images` varchar(600)      DEFAULT NULL COMMENT '照片路径，最多10张，多张以","隔开',
+                            `like_count` int(11)       DEFAULT 0 COMMENT '点赞数',
+                            `answer_count` int(11)    DEFAULT 0 COMMENT '回答数',
                             `view_count` int(11)       DEFAULT 0 COMMENT '浏览量',
                             `solved_flag` tinyint(1)   DEFAULT 0 COMMENT '是否解决 0：未解决 1：已解决',
                             `create_time` datetime     DEFAULT NULL COMMENT '创建时间',

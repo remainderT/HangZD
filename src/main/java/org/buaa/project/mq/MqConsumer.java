@@ -49,9 +49,7 @@ public class MqConsumer implements StreamListener<String, MapRecord<String, Stri
     }
 
     public void messageSendConsume(MqEvent event) {
-        if (!Objects.equals(event.getUserId(), event.getEntityUserId())) {
 
-        }
     }
 
 }
