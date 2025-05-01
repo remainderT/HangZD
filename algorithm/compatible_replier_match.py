@@ -44,11 +44,15 @@ def compute_activity_score(user):
     return (user["active_days"] / 30.0) * 0.5 + (user["like_count"] / 20.0) * 0.5
 
 
-def load_users_from_mysql():
+def load_users_from_mysql(sender_username):
     connection = pymysql.connect(**DB_CONFIG)
     cursor = connection.cursor(pymysql.cursors.DictCursor)
 
-    cursor.execute("SELECT id, active_days, like_count, avatar, username, useful_count, tags FROM user WHERE user_type = 'user'")
+    cursor.execute(f"""
+            SELECT id, active_days, like_count, avatar, username, useful_count, tags
+            FROM user
+            WHERE user_type = 'user' AND username != '{sender_username}'
+            """)
     activity_data = cursor.fetchall()
     cursor.execute("SELECT user_id, content FROM answer")
     replies = cursor.fetchall()
@@ -86,13 +90,14 @@ def load_users_from_mysql():
 @app.route("/recommend", methods=["POST"])
 def recommend():
     data = request.get_json()
+    username = data.get("username", "")
     question = data.get("question", "")
     if not question:
         return jsonify({"error": "Missing question"}), 400
 
     translated_question = translate_zh_to_en(question)
     q_vec = embedding_model.encode(translated_question)
-    users = load_users_from_mysql()
+    users = load_users_from_mysql(username)
     scored_users = []
 
     for user in users:
