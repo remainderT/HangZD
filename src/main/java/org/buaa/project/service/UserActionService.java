@@ -2,7 +2,6 @@ package org.buaa.project.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.buaa.project.dao.entity.UserActionDO;
-import org.buaa.project.dto.req.useraction.UserActionReqDTO;
 
 import java.util.List;
 
