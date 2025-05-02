@@ -1,12 +1,14 @@
 package org.buaa.project.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.buaa.project.common.biz.user.UserContext;
 import org.buaa.project.common.convention.exception.ServiceException;
+import org.buaa.project.controller.WebSocketServer;
 import org.buaa.project.dao.entity.MessageDO;
 import org.buaa.project.dao.entity.QuestionDO;
 import org.buaa.project.dao.mapper.MessageMapper;
@@ -84,7 +86,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageDO> im
     }
 
     @Override
-    public void addMessage(MessageUploadReqDTO requestParam) {
+    public void sendMessage(MessageUploadReqDTO requestParam) {
         //TODO:user的id应该从2开始自增，因为1是系统
         checkMessageValid(requestParam);
         MessageDO message = BeanUtil.toBean(requestParam, MessageDO.class);
@@ -94,6 +96,16 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageDO> im
         //message.setCreateTime();
         message.setGenerateId(0L);
         baseMapper.insert(message);
+
+        //将消息推送给B
+        //将message转化为json字符串
+        String messageJson = JSONUtil.toJsonStr(message);
+        try {
+            WebSocketServer.sendToUser(message.getToId(), messageJson);
+            WebSocketServer.sendToUser(UserContext.getUserId(), messageJson);
+        } catch (Exception e){
+            throw new ServiceException(MESSAGE_SEND_FAILED);
+        }
     }
 
     @Override
