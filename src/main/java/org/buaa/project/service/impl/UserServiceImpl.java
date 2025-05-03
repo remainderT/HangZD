@@ -302,6 +302,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
 
         userDO.setTags(tags);
         baseMapper.updateById(userDO);
+        
+        stringRedisTemplate.delete(USER_INFO_KEY + username);
+        UserDO updatedUser = baseMapper.selectOne(queryWrapper);
+        stringRedisTemplate.opsForValue().set(
+                USER_INFO_KEY + username,
+                JSON.toJSONString(updatedUser)
+        );
     }
 
 }
