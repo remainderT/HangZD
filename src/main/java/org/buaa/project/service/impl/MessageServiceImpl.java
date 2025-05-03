@@ -1,12 +1,14 @@
 package org.buaa.project.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.buaa.project.common.biz.user.UserContext;
 import org.buaa.project.common.convention.exception.ServiceException;
+import org.buaa.project.controller.WebSocketServer;
 import org.buaa.project.dao.entity.MessageDO;
 import org.buaa.project.dao.entity.QuestionDO;
 import org.buaa.project.dao.mapper.MessageMapper;
@@ -94,6 +96,11 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageDO> im
         //message.setCreateTime();
         message.setGenerateId(0L);
         baseMapper.insert(message);
+
+        //websocket推送消息
+        String jsonMessage = JSON.toJSONString(message);
+        WebSocketServer.sendToUser(String.valueOf(requestParam.getToId()), jsonMessage);
+        WebSocketServer.sendToUser(String.valueOf(UserContext.getUserId()), jsonMessage);
     }
 
     @Override
