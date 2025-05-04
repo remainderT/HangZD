@@ -28,9 +28,8 @@ public class QuestionController {
      * 上传问题
      */
     @PostMapping("/api/hangzd/question")
-    public Result<Void> uploadQuestion(@RequestBody QuestionUploadReqDTO requestParam) {
-        questionService.uploadQuestion(requestParam);
-        return Results.success();
+    public Result<Long> uploadQuestion(@RequestBody QuestionUploadReqDTO requestParam) {
+        return Results.success(questionService.uploadQuestion(requestParam));
     }
 
     /**

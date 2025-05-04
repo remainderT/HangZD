@@ -34,73 +34,70 @@ import static org.buaa.project.common.enums.QAErrorCodeEnum.QUESTION_USER_INCORR
 public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, QuestionDO> implements QuestionService {
 
     @Override
-    public void uploadQuestion(QuestionUploadReqDTO requestParam) {
-        QuestionDO question = BeanUtil.toBean(requestParam, QuestionDO.class);
-        question.setUserId(UserContext.getUserId());
-        question.setUsername(UserContext.getUsername());
-        question.setSolvedFlag(0);
-        baseMapper.insert(question);
+    public Long uploadQuestion(QuestionUploadReqDTO requestParam) {
+        QuestionDO questionDO = BeanUtil.toBean(requestParam, QuestionDO.class);
+        questionDO.setUserId(UserContext.getUserId());
+        questionDO.setUsername(UserContext.getUsername());
+        questionDO.setSolvedFlag(0);
+        baseMapper.insert(questionDO);
+        return questionDO.getId();
     }
 
     @Override
     public void updateQuestion(QuestionUpdateReqDTO requestParam){
-        Long id = requestParam.getId();
-        checkQuestionExist(id);
-        checkQuestionOwner(id);
-
         LambdaUpdateWrapper<QuestionDO> queryWrapper = Wrappers.lambdaUpdate(QuestionDO.class)
                 .eq(QuestionDO::getId, requestParam.getId());
         QuestionDO questionDO = baseMapper.selectOne(queryWrapper);
+        checkQuestionExist(questionDO);
+        checkQuestionOwner(questionDO);
+
         BeanUtils.copyProperties(requestParam, questionDO);
         baseMapper.update(questionDO, queryWrapper);
     }
 
     @Override
     public void deleteQuestion(Long id) {
-        checkQuestionExist(id);
+        QuestionDO questionDO = baseMapper.selectById(id);
+        checkQuestionExist(questionDO);
         if(!UserContext.getUserType().equals("admin")){
-            checkQuestionOwner(id);
+            checkQuestionOwner(questionDO);
         }
 
-        QuestionDO question = baseMapper.selectById(id);
-        question.setDelFlag(1);
-        baseMapper.updateById(question);
+        questionDO.setDelFlag(1);
+        baseMapper.updateById(questionDO);
     }
 
     @Override
     public void resolvedQuestion(QuestionSolveReqDTO requestParam) {
-        checkQuestionExist(requestParam.getId());
-        checkQuestionOwner(requestParam.getId());
+        QuestionDO questionDO = baseMapper.selectById(requestParam.getId());
+        checkQuestionExist(questionDO);
+        checkQuestionOwner(questionDO);
 
-        QuestionDO question = baseMapper.selectById(requestParam.getId());
-        question.setSolvedFlag(1);
-        baseMapper.updateById(question);
+        questionDO.setSolvedFlag(1);
+        baseMapper.updateById(questionDO);
     }
 
     @Override
-    public void checkQuestionExist(Long id) {
-        QuestionDO question = baseMapper.selectById(id);
-        if (Objects.isNull(question)) {
+    public void checkQuestionExist(QuestionDO questionDO) {
+        if (Objects.isNull(questionDO)) {
             throw new ServiceException(QUESTION_NULL);
         }
     }
 
     @Override
-    public void checkQuestionOwner(Long id) {
-        checkQuestionExist(id);
+    public void checkQuestionOwner(QuestionDO questionDO) {
         Long currentUserId = UserContext.getUserId();
-        QuestionDO question = baseMapper.selectById(id);
-        if (!Objects.equals(currentUserId, question.getUserId())) {
+        if (!Objects.equals(currentUserId, questionDO.getUserId())) {
             throw new ServiceException(QUESTION_USER_INCORRECT);
         }
     }
 
     @Override
     public QuestionRespDTO getQuestionById(Long id) {
-        checkQuestionExist(id);
-        QuestionDO question = baseMapper.selectById(id);
+        QuestionDO questionDO = baseMapper.selectById(id);
+        checkQuestionExist(questionDO);
         QuestionRespDTO result = new QuestionRespDTO();
-        BeanUtils.copyProperties(question, result);
+        BeanUtils.copyProperties(questionDO, result);
         return result;
     }
 

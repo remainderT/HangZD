@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.buaa.project.common.biz.user.UserContext;
 import org.buaa.project.common.convention.exception.ClientException;
 import org.buaa.project.dao.entity.AnswerDO;
+import org.buaa.project.dao.entity.QuestionDO;
 import org.buaa.project.dao.mapper.AnswerMapper;
 import org.buaa.project.dto.req.answer.AnswerUpdateReqDTO;
 import org.buaa.project.dto.req.answer.AnswerUploadReqDTO;
@@ -31,7 +32,8 @@ public class AnswerServiceImpl extends ServiceImpl<AnswerMapper, AnswerDO> imple
     public AnswerRespDTO postAnswer(AnswerUploadReqDTO requestParam) {
         AnswerDO answerDO = BeanUtil.copyProperties(requestParam, AnswerDO.class);
         Long questionId = requestParam.getQuestionId();
-        questionService.checkQuestionExist(questionId);
+        QuestionDO questionDO = questionService.getById(questionId);
+        questionService.checkQuestionExist(questionDO);
 
         answerDO.setUserId(UserContext.getUserId());
         answerDO.setUsername(UserContext.getUsername());
