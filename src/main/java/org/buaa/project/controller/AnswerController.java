@@ -3,22 +3,17 @@ package org.buaa.project.controller;
 import lombok.RequiredArgsConstructor;
 import org.buaa.project.common.convention.result.Result;
 import org.buaa.project.common.convention.result.Results;
-import org.buaa.project.dao.entity.AnswerDO;
-import org.buaa.project.dao.entity.MessageDO;
 import org.buaa.project.dto.req.answer.AnswerUpdateReqDTO;
 import org.buaa.project.dto.req.answer.AnswerUploadReqDTO;
-import org.buaa.project.dto.req.message.MessageUpdateReqDTO;
-import org.buaa.project.dto.req.message.MessageUploadReqDTO;
 import org.buaa.project.dto.resp.AnswerRespDTO;
 import org.buaa.project.service.AnswerService;
-import org.buaa.project.service.MessageService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 消息控制层
+ * 回答控制层
  */
 @RestController
 @RequiredArgsConstructor
@@ -30,9 +25,8 @@ public class AnswerController {
      * 添加回答
      */
     @PostMapping("/api/hangzd/answer")
-    public Result<Void> postAnswer(@RequestBody AnswerUploadReqDTO message) {
-        answerService.postAnswer(message);
-        return Results.success();
+    public Result<AnswerRespDTO> postAnswer(@RequestBody AnswerUploadReqDTO requestParam) {
+        return Results.success(answerService.postAnswer(requestParam));
     }
 
     /**

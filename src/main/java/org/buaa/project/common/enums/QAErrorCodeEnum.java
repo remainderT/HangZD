@@ -9,7 +9,9 @@ public enum QAErrorCodeEnum implements IErrorCode {
 
     ANSWER_NULL("C000101", "该回答不存在"),
 
-    ANSWER_POST_FAIL("C000102", "回答发布失败"),
+    ANSWER_USER_INCORRECT("C000102", "该回答并非该用户所有"),
+
+    ANSWER_POST_FAIL("C000103", "回答发布失败"),
 
     QUESTION_NULL("C000201", "该问题不存在"),
 

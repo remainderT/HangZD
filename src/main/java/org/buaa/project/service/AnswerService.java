@@ -10,12 +10,36 @@ import org.buaa.project.dto.resp.AnswerRespDTO;
  * 回答接口层
  */
 public interface AnswerService extends IService<AnswerDO> {
+
+    /**
+     * 发布回答
+     */
+    AnswerRespDTO postAnswer(AnswerUploadReqDTO requestParam);
+
+    /**
+     * 更新回答
+     */
     void updateAnswer(AnswerUpdateReqDTO requestParam);
 
-    void postAnswer(AnswerUploadReqDTO message);
-
+    /**
+     * 根据ID获取回答
+     */
     AnswerRespDTO getAnswerById(Long id);
 
+    /**
+     * 删除回答
+     */
     void deleteAnswer(Long id);
+
+    /**
+     * 检查回答是否存在
+     */
+    void checkAnswerExist(AnswerDO answerDO);
+
+    /**
+     * 检查回答所有者
+     */
+    void checkAnswerOwner(AnswerDO answerDO);
+
 
 }
