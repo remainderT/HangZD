@@ -14,6 +14,7 @@ import org.buaa.project.dto.req.question.QuestionSolveReqDTO;
 import org.buaa.project.dto.req.question.QuestionUpdateReqDTO;
 import org.buaa.project.dto.req.question.QuestionUploadReqDTO;
 import org.buaa.project.dto.resp.QuestionRespDTO;
+import org.buaa.project.dto.resp.QuestionUploadRespDTO;
 import org.buaa.project.dto.resp.UserRespDTO;
 import org.buaa.project.service.QuestionService;
 import org.springframework.beans.BeanUtils;
@@ -34,13 +35,13 @@ import static org.buaa.project.common.enums.QAErrorCodeEnum.QUESTION_USER_INCORR
 public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, QuestionDO> implements QuestionService {
 
     @Override
-    public Long uploadQuestion(QuestionUploadReqDTO requestParam) {
+    public QuestionUploadRespDTO uploadQuestion(QuestionUploadReqDTO requestParam) {
         QuestionDO questionDO = BeanUtil.toBean(requestParam, QuestionDO.class);
         questionDO.setUserId(UserContext.getUserId());
         questionDO.setUsername(UserContext.getUsername());
         questionDO.setSolvedFlag(0);
         baseMapper.insert(questionDO);
-        return questionDO.getId();
+        return BeanUtil.toBean(questionDO, QuestionUploadRespDTO.class);
     }
 
     @Override

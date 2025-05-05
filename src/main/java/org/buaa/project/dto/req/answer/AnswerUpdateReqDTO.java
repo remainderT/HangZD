@@ -17,6 +17,9 @@ public class AnswerUpdateReqDTO {
      */
     private String content;
 
-
+    /**
+     * 包含的图片
+     */
+    private String images;
 
 }

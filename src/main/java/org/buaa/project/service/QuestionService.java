@@ -6,6 +6,7 @@ import org.buaa.project.dto.req.question.QuestionSolveReqDTO;
 import org.buaa.project.dto.req.question.QuestionUpdateReqDTO;
 import org.buaa.project.dto.req.question.QuestionUploadReqDTO;
 import org.buaa.project.dto.resp.QuestionRespDTO;
+import org.buaa.project.dto.resp.QuestionUploadRespDTO;
 import org.buaa.project.dto.resp.UserRespDTO;
 
 import java.util.List;
@@ -18,7 +19,7 @@ public interface QuestionService extends IService<QuestionDO> {
     /**
      * 上传问题
      */
-    Long uploadQuestion(QuestionUploadReqDTO requestParam);
+    QuestionUploadRespDTO uploadQuestion(QuestionUploadReqDTO requestParam);
 
     /**
      * 修改问题

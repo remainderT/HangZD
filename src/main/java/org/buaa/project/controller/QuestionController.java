@@ -8,6 +8,7 @@ import org.buaa.project.dto.req.question.QuestionUpdateReqDTO;
 import org.buaa.project.dto.req.question.QuestionUploadReqDTO;
 import org.buaa.project.dto.req.question.AskUsersReqDTO;
 import org.buaa.project.dto.resp.QuestionRespDTO;
+import org.buaa.project.dto.resp.QuestionUploadRespDTO;
 import org.buaa.project.dto.resp.UserRespDTO;
 import org.buaa.project.service.QuestionService;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +29,7 @@ public class QuestionController {
      * 上传问题
      */
     @PostMapping("/api/hangzd/question")
-    public Result<Long> uploadQuestion(@RequestBody QuestionUploadReqDTO requestParam) {
+    public Result<QuestionUploadRespDTO> uploadQuestion(@RequestBody QuestionUploadReqDTO requestParam) {
         return Results.success(questionService.uploadQuestion(requestParam));
     }
 
