@@ -16,7 +16,7 @@ embedding_model = SentenceTransformer('multi-qa-mpnet-base-dot-v1')
 DB_CONFIG = {
     'host': 'localhost',
     'user': 'root',
-    'password': 'xxxxxx', # 你的数据库密码
+    'password': 'xxxxxx', #你的数据库密码
     'database': 'hangzd',
     'port': 3306
 }
@@ -90,7 +90,7 @@ def load_users_from_mysql(sender_username):
 @app.route("/recommend", methods=["POST"])
 def recommend():
     data = request.get_json()
-    username = data.get("username", "")
+    username = request.headers.get("username", "")
     question = data.get("question", "")
     if not question:
         return jsonify({"error": "Missing question"}), 400
