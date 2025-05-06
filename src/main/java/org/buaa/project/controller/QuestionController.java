@@ -89,7 +89,7 @@ public class QuestionController {
      */
     @PutMapping("/api/hangzd/user/ask")
     public Result<Void> askUsers(@RequestBody AskUsersReqDTO requestParam) {
-        System.out.println(requestParam);
+        questionService.askUsers(requestParam);
         return Results.success();
     }
 }

@@ -2,6 +2,7 @@ package org.buaa.project.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.buaa.project.dao.entity.QuestionDO;
+import org.buaa.project.dto.req.question.AskUsersReqDTO;
 import org.buaa.project.dto.req.question.QuestionSolveReqDTO;
 import org.buaa.project.dto.req.question.QuestionUpdateReqDTO;
 import org.buaa.project.dto.req.question.QuestionUploadReqDTO;
@@ -55,4 +56,9 @@ public interface QuestionService extends IService<QuestionDO> {
      * 回答推荐
      */
     List<UserRespDTO> findAnswerers( Long questionId);
+
+    /**
+     * 向用户提问
+     */
+    void askUsers(AskUsersReqDTO requestParam);
 }

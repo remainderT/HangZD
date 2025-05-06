@@ -48,6 +48,11 @@ public class UserActionDO extends BaseDO {
      * 点赞状态：0-未点赞，1-已点赞
      */
     private Integer likeStat;
+
+    /**
+     * 推荐状态：0-未推荐，1-已推荐
+     */
+    private Integer recommendStat;
     
     /**
      * 上次浏览时间

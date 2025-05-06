@@ -137,4 +137,11 @@ public class UserActionServiceImpl extends ServiceImpl<UserActionMapper, UserAct
         }
 
     }
-} 
+
+    @Override
+    public void recommendQuestion(Long questionId, Long userId) {
+        UserActionDO userAction = getUserAction(userId, EntityTypeEnum.QUESTION, questionId);
+        userAction.setRecommendStat(1);
+        baseMapper.updateById(userAction);
+    }
+}

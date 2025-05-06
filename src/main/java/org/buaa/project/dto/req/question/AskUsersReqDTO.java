@@ -5,12 +5,18 @@ import lombok.Data;
 import java.util.List;
 
 /**
- * 用户登录请求参数
+ * 问题推荐回答者请求参数
  */
 @Data
 public class AskUsersReqDTO {
 
-    private Long aid;
-    private Long qid;
-    private List<Long> ids;
+    /**
+     * 问题id
+     */
+    private Long questionId;
+
+    /**
+     * 用户id列表
+     */
+    private List<Long> userIds;
 }

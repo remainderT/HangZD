@@ -104,6 +104,7 @@ CREATE TABLE `user_action` (
                         `entity_id` bigint(20)  unsigned NOT NULL DEFAULT '0' COMMENT '实体ID',
                         `collect_stat` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '收藏状态: 0-未收藏，1-已收藏',
                         `like_stat` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '点赞状态: 0-未点赞，1-点赞',
+                        `recommend_stat` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '问题推荐状态: 0-未推荐，1-推荐',
                         `last_view_time` datetime     DEFAULT NULL COMMENT '上次浏览时间',
                         `create_time` datetime     DEFAULT NULL COMMENT '创建时间',
                         `update_time` datetime     DEFAULT NULL COMMENT '修改时间',

@@ -17,6 +17,7 @@ import org.buaa.project.dto.resp.QuestionRespDTO;
 import org.buaa.project.dto.resp.QuestionUploadRespDTO;
 import org.buaa.project.dto.resp.UserRespDTO;
 import org.buaa.project.service.QuestionService;
+import org.buaa.project.service.UserActionService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +34,8 @@ import static org.buaa.project.common.enums.QAErrorCodeEnum.QUESTION_USER_INCORR
 @Service
 @RequiredArgsConstructor
 public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, QuestionDO> implements QuestionService {
+
+    private final UserActionService userActionService;
 
     @Override
     public QuestionUploadRespDTO uploadQuestion(QuestionUploadReqDTO requestParam) {
@@ -108,52 +111,15 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, QuestionDO>
         return new ArrayList<>();
     }
 
-
+    @Override
     public void askUsers(AskUsersReqDTO requestParam) {
-//        Long aid = requestParam.getAid();
-//        Long qid = requestParam.getQid();
-//        List<Long> ids = requestParam.getIds();
-//        System.out.println(aid);
-//        System.out.println(qid);
-//        System.out.println(ids);
-//        // 检查提问者是否存在
-//        LambdaQueryWrapper<UserDO> askerQueryWrapper = Wrappers.lambdaQuery(UserDO.class)
-//                .eq(UserDO::getId, aid);
-//        UserDO asker = baseMapper.selectOne(askerQueryWrapper);
-//        System.out.println(asker);
-//        if (asker == null) {
-//            throw new ClientException(USER_NULL);
-//        }
-//        // 检查问题是否存在
-//        LambdaQueryWrapper<QuestionDO> questionQueryWrapper = Wrappers.lambdaQuery(QuestionDO.class)
-//                .eq(QuestionDO::getId, qid);
-//        QuestionDO question = questionMapper.selectOne(questionQueryWrapper);
-//        if (question == null) {
-//            throw new ClientException(QUESTION_NULL);
-//        }
-//
-//        for(Long answerid: ids) {
-//            // 检查回答者是否存在
-//            LambdaQueryWrapper<UserDO> answererQueryWrapper = Wrappers.lambdaQuery(UserDO.class)
-//                    .eq(UserDO::getId, answerid);
-//            UserDO answerer = baseMapper.selectOne(answererQueryWrapper);
-//            if (answerer == null) {
-//                throw new ClientException(USER_NULL);
-//            }
-//
-//            //根据回答者id和提问生成answerDO
-//            AnswerDO answerDO = new AnswerDO();
-//            answerDO.setUserId(answerid);
-//            answerDO.setUsername(answerer.getUsername());
-//            answerDO.setQuestionId(qid);
-//            //answerDO.setContent(question.getContent());
-//            //插入Answer表
-//            int inserted = answerMapper.insert(answerDO);
-//            if (inserted < 1) {
-//                throw new ClientException(ANSWER_POST_FAIL);
-//            }
-//        }
-
+          Long questionId = requestParam.getQuestionId();
+          List<Long> userIds = requestParam.getUserIds();
+          QuestionDO questionDO = baseMapper.selectById(questionId);
+          checkQuestionExist(questionDO);
+          for (Long userId : userIds) {
+              userActionService.recommendQuestion(questionId, userId);
+          }
     }
 
 }

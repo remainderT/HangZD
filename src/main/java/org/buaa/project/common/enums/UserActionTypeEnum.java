@@ -9,7 +9,9 @@ public enum UserActionTypeEnum {
 
     ANSWER( "answer"),
 
-    LIKE( "like");
+    LIKE( "like"),
+
+    RECOMMEND( "recommend");
 
     private final String type;
 
