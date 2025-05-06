@@ -215,7 +215,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
     }
 
     @Override
-    public void logout(String username, String token) {
+    public void logout() {
+        String username = UserContext.getUsername();
+        String token = UserContext.getToken();
         if (checkLogin(username, token)) {
             stringRedisTemplate.delete(USER_LOGIN_KEY + username);
             return;
@@ -270,7 +272,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
                 .eq(UserDO::getUsername, UserContext.getUsername())
                 .set(UserDO::getPassword, newPassword);
         baseMapper.update(null, updateWrapper);
-        logout(UserContext.getUsername(), UserContext.getToken());
+        if (checkLogin(UserContext.getUsername(), UserContext.getToken())) {
+            stringRedisTemplate.delete(USER_LOGIN_KEY + UserContext.getUsername());
+            return;
+        }
+        throw new ClientException(USER_TOKEN_NULL);
     }
     
     @Override

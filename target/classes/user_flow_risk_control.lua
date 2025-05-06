@@ -5,7 +5,7 @@ local accessKey = "hangzd:user:flow-risk-control:" .. ip
 
 local currentAccessCount = redis.call("INCR", accessKey)
 
-if currentAccessCount == 1 then
+if currentAccessCount == 5 then
     redis.call("EXPIRE", accessKey, timeWindow)
 end
 
