@@ -98,6 +98,7 @@ def recommend():
                 np.atleast_2d(user_vec)
             )[0][0]
             act_score = compute_activity_score(user)
+
             final_score = sim_score * act_score
         scored_users.append((final_score, user))
 
