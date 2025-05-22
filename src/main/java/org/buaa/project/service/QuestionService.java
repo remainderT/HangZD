@@ -1,14 +1,14 @@
 package org.buaa.project.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import org.buaa.project.common.convention.result.Result;
 import org.buaa.project.dao.entity.QuestionDO;
+import org.buaa.project.dto.req.question.AskUsersReqDTO;
 import org.buaa.project.dto.req.question.QuestionSolveReqDTO;
 import org.buaa.project.dto.req.question.QuestionUpdateReqDTO;
 import org.buaa.project.dto.req.question.QuestionUploadReqDTO;
 import org.buaa.project.dto.resp.QuestionRespDTO;
+import org.buaa.project.dto.resp.QuestionUploadRespDTO;
 import org.buaa.project.dto.resp.UserRespDTO;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -20,7 +20,7 @@ public interface QuestionService extends IService<QuestionDO> {
     /**
      * 上传问题
      */
-    void uploadQuestion(QuestionUploadReqDTO requestParam);
+    QuestionUploadRespDTO uploadQuestion(QuestionUploadReqDTO requestParam);
 
     /**
      * 修改问题
@@ -40,12 +40,12 @@ public interface QuestionService extends IService<QuestionDO> {
     /**
      * 检查问题是否存在
      */
-    void checkQuestionExist(Long id);
+    void checkQuestionExist(QuestionDO questionDO);
 
     /**
      * 检查问题是否为当前用户所有
      */
-    void checkQuestionOwner(Long id);
+    void checkQuestionOwner(QuestionDO questionDO);
 
     /**
      * 返回指定id问题的详细信息
@@ -56,4 +56,9 @@ public interface QuestionService extends IService<QuestionDO> {
      * 回答推荐
      */
     List<UserRespDTO> findAnswerers( Long questionId);
+
+    /**
+     * 向用户提问
+     */
+    void askUsers(AskUsersReqDTO requestParam);
 }

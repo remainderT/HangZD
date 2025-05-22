@@ -1,22 +1,23 @@
 package org.buaa.project.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
-import org.buaa.project.common.convention.exception.ServiceException;
+import org.buaa.project.common.biz.user.UserContext;
+import org.buaa.project.common.convention.exception.ClientException;
 import org.buaa.project.dao.entity.AnswerDO;
+import org.buaa.project.dao.entity.QuestionDO;
 import org.buaa.project.dao.mapper.AnswerMapper;
-import org.buaa.project.dao.mapper.QuestionMapper;
-import org.buaa.project.dao.mapper.UserMapper;
 import org.buaa.project.dto.req.answer.AnswerUpdateReqDTO;
 import org.buaa.project.dto.req.answer.AnswerUploadReqDTO;
 import org.buaa.project.dto.resp.AnswerRespDTO;
 import org.buaa.project.service.AnswerService;
+import org.buaa.project.service.QuestionService;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import static org.buaa.project.common.enums.QAErrorCodeEnum.*;
-import static org.buaa.project.common.enums.UserErrorCodeEnum.USER_NULL;
+import static org.buaa.project.common.enums.QAErrorCodeEnum.ANSWER_NULL;
+import static org.buaa.project.common.enums.QAErrorCodeEnum.ANSWER_USER_INCORRECT;
 
 /**
  * 回答接口实现层
@@ -24,56 +25,62 @@ import static org.buaa.project.common.enums.UserErrorCodeEnum.USER_NULL;
 @Service
 @RequiredArgsConstructor
 public class AnswerServiceImpl extends ServiceImpl<AnswerMapper, AnswerDO> implements AnswerService {
-    @Autowired
-    private UserMapper userMapper;
-    @Autowired
-    private QuestionMapper questionMapper;
+
+    private final QuestionService questionService;
 
     @Override
-    public void updateAnswer(AnswerUpdateReqDTO requestParam) {
-        //TODO
+    public AnswerRespDTO postAnswer(AnswerUploadReqDTO requestParam) {
+        AnswerDO answerDO = BeanUtil.copyProperties(requestParam, AnswerDO.class);
+        Long questionId = requestParam.getQuestionId();
+        QuestionDO questionDO = questionService.getById(questionId);
+        questionService.checkQuestionExist(questionDO);
+
+        answerDO.setUserId(UserContext.getUserId());
+        answerDO.setUsername(UserContext.getUsername());
+        baseMapper.insert(answerDO);
+        return BeanUtil.copyProperties(answerDO, AnswerRespDTO.class);
     }
 
     @Override
-    public void postAnswer(AnswerUploadReqDTO answer) {
-        AnswerDO answerDO = new AnswerDO();
+    public void updateAnswer(AnswerUpdateReqDTO requestParam) {
+        AnswerDO answerDO = baseMapper.selectById(requestParam.getId());
+        checkAnswerExist(answerDO);
+        checkAnswerOwner(answerDO);
 
-        //检查用户是否存在
-        if (userMapper.selectById(answer.getUser_id()) == null) {
-            throw new ServiceException(USER_NULL);
-        }
-        answerDO.setUserId(answer.getUser_id());
-        answerDO.setUsername(answer.getUsername());
-
-        //检查问题是否存在
-        if (questionMapper.selectById(answer.getQuestion_id()) == null) {
-            throw new ServiceException(QUESTION_NULL);
-        }
-        answerDO.setQuestionId(answer.getQuestion_id());
-        answerDO.setContent(answer.getContent());
-        answerDO.setImages(answer.getImages());
-        answerDO.setLikeCount(0);
-        answerDO.setUseful(0);
-        //写入Answer表
-        int inserted = baseMapper.insert(answerDO);
-        if(inserted < 1) {
-            throw new ServiceException(ANSWER_POST_FAIL);
-        }
+        BeanUtils.copyProperties(requestParam, answerDO);
+        baseMapper.updateById(answerDO);
     }
 
     @Override
     public AnswerRespDTO getAnswerById(Long id) {
         AnswerDO answerDO = baseMapper.selectById(id);
-        if (answerDO == null) {
-            throw new ServiceException(ANSWER_NULL);
-        }
-        AnswerRespDTO result = new AnswerRespDTO();
-        BeanUtils.copyProperties(answerDO, result);
-        return result;
+        checkAnswerExist(answerDO);
+        return BeanUtil.copyProperties(answerDO, AnswerRespDTO.class);
     }
 
     @Override
     public void deleteAnswer(Long id) {
-        //TODO
+        AnswerDO answerDO = baseMapper.selectById(id);
+        checkAnswerExist(answerDO);
+        checkAnswerOwner(answerDO);
+
+        answerDO.setDelFlag(1);
+        baseMapper.updateById(answerDO);
     }
+
+    @Override
+    public void checkAnswerExist(AnswerDO answerDO) {
+        if (answerDO == null || answerDO.getDelFlag() != 0) {
+            throw new ClientException(ANSWER_NULL);
+        }
+    }
+
+    @Override
+    public void checkAnswerOwner(AnswerDO answerDO) {
+        long userId = UserContext.getUserId();
+        if (!answerDO.getUserId().equals(userId)) {
+            throw new ClientException(ANSWER_USER_INCORRECT);
+        }
+    }
+
 }

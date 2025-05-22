@@ -52,7 +52,7 @@ public interface UserService extends IService<UserDO> {
     /**
      * 退出登录
      */
-    void logout(String username, String token);
+    void logout();
 
     /**
      * 更新用户信息

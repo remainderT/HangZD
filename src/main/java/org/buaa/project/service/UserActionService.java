@@ -20,4 +20,9 @@ public interface UserActionService extends IService<UserActionDO> {
      */
     void collectAndLike(EntityTypeEnum entityType, Long entityId, UserActionTypeEnum actionType);
 
+    /**
+     * 用户行为： 推荐问题
+     */
+    void recommendQuestion(Long questionId, Long userId);
+
 } 

@@ -4,6 +4,9 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.buaa.project.mq.MqConsumer;
+import org.redisson.api.RedissonClient;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.SmartLifecycle;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -24,11 +27,9 @@ import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+
 import static org.buaa.project.common.consts.RedisCacheConstants.MESSAGE_SEND_STREAM_KEY;
 
-/**
- * Redis Stream 消息队列配置
- */
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
@@ -40,75 +41,112 @@ public class RedisStreamConfiguration {
 
     @PostConstruct
     public void init() {
-        createStreamAndGroupIfNotExists(MESSAGE_SEND_STREAM_KEY, "message-send-consumer-group");
-    }
-
-    private void createStreamAndGroupIfNotExists(String streamKey, String groupName) {
-        StreamOperations<String, String, String> streamOperations = stringRedisTemplate.opsForStream();
-        if (!stringRedisTemplate.hasKey(streamKey)) {
-            Map<String, String> message = new HashMap<>();
-            message.put("status", "initialization");
-            streamOperations.add(streamKey, message);
+        StreamOperations<String, String, String> ops = stringRedisTemplate.opsForStream();
+        if (!stringRedisTemplate.hasKey(MESSAGE_SEND_STREAM_KEY)) {
+            Map<String, String> msg = new HashMap<>();
+            msg.put("status", "init");
+            ops.add(MESSAGE_SEND_STREAM_KEY, msg);
         }
-
         try {
-            streamOperations.createGroup(streamKey, ReadOffset.from("0-0"), groupName);
+            ops.createGroup(MESSAGE_SEND_STREAM_KEY, ReadOffset.from("0-0"), "message-send-consumer-group");
         } catch (Exception e) {
-            // 如果消费者组已经存在，忽略异常
             if (!e.getMessage().contains("BUSYGROUP")) {
                 throw e;
             }
         }
-        log.info("Stream {} and group {} initialization completed", streamKey, groupName);
+        log.info("Stream init done");
     }
 
     @Bean
     public ExecutorService asyncStreamConsumer() {
-        AtomicInteger index = new AtomicInteger();
-        return new ThreadPoolExecutor(2,
-                2,
-                60,
-                TimeUnit.SECONDS,
+        AtomicInteger idx = new AtomicInteger();
+        return new ThreadPoolExecutor(
+                2, 2,
+                60, TimeUnit.SECONDS,
                 new SynchronousQueue<>(),
-                runnable -> {
-                    Thread thread = new Thread(runnable);
-                    thread.setName("stream_consumer_" + index.incrementAndGet());
-                    thread.setDaemon(true);
-                    return thread;
+                r -> {
+                    Thread t = new Thread(r, "stream_consumer_" + idx.incrementAndGet());
+                    t.setDaemon(true);
+                    return t;
                 },
                 new ThreadPoolExecutor.DiscardOldestPolicy()
         );
     }
 
-    @Bean
-    public Subscription shortLinkStatsSaveConsumerSubscription(ExecutorService asyncStreamConsumer) {
-        return createStreamConsumer(MESSAGE_SEND_STREAM_KEY, "message-send-consumer-group", asyncStreamConsumer, "consumer1");
-    }
+    @Bean("streamContainer")
+    public StreamMessageListenerContainer<String, MapRecord<String, String, String>> streamMessageListenerContainer(
+            RedisConnectionFactory factory,
+            ExecutorService asyncStreamConsumer) {
 
-
-    private Subscription createStreamConsumer(String streamKey, String groupKey, ExecutorService asyncStreamConsumer, String consumerName) {
-        StreamMessageListenerContainer.StreamMessageListenerContainerOptions<String, MapRecord<String, String, String>> options =
-                StreamMessageListenerContainer.StreamMessageListenerContainerOptions
-                        .builder()
-                        // 批量拉取消息的大小为 10 条
+        StreamMessageListenerContainer.StreamMessageListenerContainerOptions<String, MapRecord<String, String, String>> opts =
+                StreamMessageListenerContainer.StreamMessageListenerContainerOptions.builder()
                         .batchSize(10)
                         .executor(asyncStreamConsumer)
-                        // 设置拉取消息的超时时间为 3 秒
                         .pollTimeout(Duration.ofSeconds(3))
                         .build();
 
-        StreamMessageListenerContainer.StreamReadRequest<String> streamReadRequest =
-                StreamMessageListenerContainer.StreamReadRequest.builder(StreamOffset.create(streamKey, ReadOffset.lastConsumed()))
-                        .cancelOnError(throwable -> false)
-                        .consumer(Consumer.from(groupKey, consumerName))
-                        // 自动确认消息
-                        .autoAcknowledge(true)
-                        .build();
-
-        StreamMessageListenerContainer<String, MapRecord<String, String, String>> listenerContainer = StreamMessageListenerContainer.create(redisConnectionFactory, options);
-        Subscription subscription = listenerContainer.register(streamReadRequest, mqConsumer);
-        listenerContainer.start();
-        return subscription;
+        return StreamMessageListenerContainer.create(factory, opts);
     }
 
+    @Bean
+    public Subscription shortLinkStatsSaveConsumerSubscription(
+            @Qualifier("streamContainer") StreamMessageListenerContainer<String, MapRecord<String, String, String>> container) {
+
+        StreamMessageListenerContainer.StreamReadRequest<String> req =
+                StreamMessageListenerContainer.StreamReadRequest.builder(
+                                StreamOffset.create(MESSAGE_SEND_STREAM_KEY, ReadOffset.lastConsumed()))
+                        .consumer(Consumer.from("message-send-consumer-group", "consumer1"))
+                        .autoAcknowledge(true)
+                        .cancelOnError(e -> false)
+                        .build();
+
+        return container.register(req, mqConsumer);
+    }
+
+    @Bean
+    public SmartLifecycle streamAndRedissonLifecycle(
+            @Qualifier("streamContainer") StreamMessageListenerContainer<?, ?> streamContainer,
+            RedissonClient redissonClient) {
+
+        return new SmartLifecycle() {
+            private volatile boolean running = false;
+
+            @Override
+            public void start() {
+                streamContainer.start();
+                running = true;
+            }
+
+            @Override
+            public void stop() {
+                // 先停流监听
+                streamContainer.stop();
+                // 再关闭 Redisson 客户端
+                redissonClient.shutdown();
+                running = false;
+            }
+
+            @Override
+            public boolean isRunning() {
+                return running;
+            }
+
+            @Override
+            public boolean isAutoStartup() {
+                return true;
+            }
+
+            @Override
+            public int getPhase() {
+                // 单一包装，在 MAX−50 调用 stop()
+                return Integer.MAX_VALUE - 50;
+            }
+
+            @Override
+            public void stop(Runnable callback) {
+                stop();
+                callback.run();
+            }
+        };
+    }
 }
