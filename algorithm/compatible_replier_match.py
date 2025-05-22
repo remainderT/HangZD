@@ -1,42 +1,31 @@
+import numpy as np
 from flask import Flask, request, jsonify
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
-from transformers import MarianMTModel, MarianTokenizer
 import pymysql
 
 app = Flask(__name__)
 
-# 加载翻译模型和句向量模型
-translate_model_name = 'Helsinki-NLP/opus-mt-zh-en'
-tokenizer = MarianTokenizer.from_pretrained(translate_model_name)
-translate_model = MarianMTModel.from_pretrained(translate_model_name)
-embedding_model = SentenceTransformer('multi-qa-mpnet-base-dot-v1')
+embedding_model = SentenceTransformer('uer/sbert-base-chinese-nli')
 
 # MySQL 配置
 DB_CONFIG = {
     'host': 'localhost',
     'user': 'root',
-    'password': 'xxxxxx', # 你的数据库密码
+    'password': 'xxxxxx', #你的数据库密码
     'database': 'hangzd',
     'port': 3306
 }
 
 
-def translate_zh_to_en(text):
-    inputs = tokenizer(text, return_tensors="pt", padding=True, truncation=True)
-    translated = translate_model.generate(**inputs)
-    return tokenizer.decode(translated[0], skip_special_tokens=True)
-
-
 def weighted_user_embedding(user, tag_weight=0.7, history_weight=0.3):
     tag_vec = 0
     history_vec = 0
+    print(user["tags"], user["history_replies"])
     if len(user["tags"]) > 0:
-        tag_text = translate_zh_to_en(user["tags"])
-        tag_vec = embedding_model.encode(tag_text)
+        tag_vec = embedding_model.encode(user["tags"])
     if len(user["history_replies"]) > 0:
-        history_text = translate_zh_to_en(user["history_replies"])
-        history_vec = embedding_model.encode(history_text)
+        history_vec = embedding_model.encode(user["history_replies"])
     return tag_weight * tag_vec + history_weight * history_vec
 
 
@@ -90,13 +79,12 @@ def load_users_from_mysql(sender_username):
 @app.route("/recommend", methods=["POST"])
 def recommend():
     data = request.get_json()
-    username = data.get("username", "")
+    username = request.headers.get("username", "")
     question = data.get("question", "")
     if not question:
         return jsonify({"error": "Missing question"}), 400
 
-    translated_question = translate_zh_to_en(question)
-    q_vec = embedding_model.encode(translated_question)
+    q_vec = embedding_model.encode(question)
     users = load_users_from_mysql(username)
     scored_users = []
 
@@ -105,8 +93,12 @@ def recommend():
             final_score = 0
         else:
             user_vec = weighted_user_embedding(user)
-            sim_score = cosine_similarity([q_vec], [user_vec])[0][0]
+            sim_score = cosine_similarity(
+                np.atleast_2d(q_vec),
+                np.atleast_2d(user_vec)
+            )[0][0]
             act_score = compute_activity_score(user)
+            print(sim_score)
             final_score = sim_score * act_score
         scored_users.append((final_score, user))
 
