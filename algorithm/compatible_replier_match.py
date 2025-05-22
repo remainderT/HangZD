@@ -81,6 +81,7 @@ def recommend():
     data = request.get_json()
     username = request.headers.get("username", "")
     question = data.get("question", "")
+
     if not question:
         return jsonify({"error": "Missing question"}), 400
 
