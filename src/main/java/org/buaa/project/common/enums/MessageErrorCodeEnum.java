@@ -13,6 +13,8 @@ public enum MessageErrorCodeEnum implements IErrorCode {
 
     MESSAGE_EMPTY_MESSAGE("D000103", "消息内容不能为空"),
 
+    MESSAGE_RECEIVER_ILLEGAL("D000104", "消息接收者不合法"),
+
     CONVERSATION_NOT_FOUND("D000201", "会话不存在"),
 
     CONVERSATION_ALREADY_EXISTS("D000202", "会话已存在"),

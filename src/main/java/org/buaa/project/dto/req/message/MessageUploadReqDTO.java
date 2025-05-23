@@ -10,6 +10,11 @@ import java.sql.Date;
 @Data
 public class MessageUploadReqDTO {
     /**
+     * 消息发送者id
+     */
+
+    private Long fromId;
+    /**
      * 消息接收者id
      */
     private Long toId;

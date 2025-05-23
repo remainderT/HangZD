@@ -52,10 +52,6 @@ public interface QuestionService extends IService<QuestionDO> {
      */
     QuestionRespDTO getQuestionById(Long id);
 
-    /**
-     * 回答推荐
-     */
-    List<UserRespDTO> findAnswerers( Long questionId);
 
     /**
      * 向用户提问

@@ -9,7 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.buaa.project.common.biz.user.UserContext;
 import org.buaa.project.common.convention.exception.ServiceException;
 import org.buaa.project.dao.entity.MessageDO;
+import org.buaa.project.dao.entity.UserDO;
 import org.buaa.project.dao.mapper.MessageMapper;
+import org.buaa.project.dao.mapper.UserMapper;
 import org.buaa.project.dto.req.message.MessageUpdateReqDTO;
 import org.buaa.project.dto.req.message.MessageUploadReqDTO;
 import org.buaa.project.service.MessageService;
@@ -30,6 +32,7 @@ import static org.buaa.project.common.enums.MessageErrorCodeEnum.*;
 @RequiredArgsConstructor
 public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageDO> implements MessageService {
     //private final UserService userService;
+    private final UserMapper userMapper;
 
     public boolean existsMessage(Long id) {
         MessageDO message = baseMapper.selectById(id);
@@ -59,7 +62,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageDO> im
     @Override
     public List<MessageDO> getMessagesBySender(Long userId) {
         LambdaQueryWrapper<MessageDO> queryWrapper = Wrappers.lambdaQuery(MessageDO.class)
-                .eq(MessageDO::getToId, userId)
+                .eq(MessageDO::getFromId, userId)
                 .eq(MessageDO::getDelFlag, 0)
                 .orderByDesc(MessageDO::getCreateTime);
         return baseMapper.selectList(queryWrapper);
@@ -85,10 +88,9 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageDO> im
 
     @Override
     public void addMessage(MessageUploadReqDTO requestParam) {
-        //TODO:user的id应该从2开始自增，因为1是系统
         checkMessageValid(requestParam);
         MessageDO message = BeanUtil.toBean(requestParam, MessageDO.class);
-        message.setFromId(UserContext.getUserId());
+        message.setFromId(requestParam.getFromId());
         message.setStatus(0);//默认未读
         message.setDelFlag(0);//默认未删除
         //message.setCreateTime();
@@ -98,7 +100,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageDO> im
 
     @Override
     public void updateMessage(MessageUpdateReqDTO requestParam) {
-        checkMessageValid(requestParam);
+        //checkMessageValid(requestParam);
         /*MessageDO message = BeanUtil.toBean(requestParam, MessageDO.class);
         if (!existsMessage(message.getId())) {
             throw new ServiceException(MESSAGE_NOT_FOUND);
@@ -140,8 +142,22 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageDO> im
     }
 
     public void checkMessageValid(MessageUploadReqDTO requestParam) {
-        //TODO：检查消息内容是否为空
-        //TODO：检查消息接收者是否存在且不是系统
+        //检查消息内容是否为空
+        if (requestParam.getContent() == null || requestParam.getContent().isEmpty()) {
+            throw new ServiceException(MESSAGE_EMPTY_MESSAGE);
+        }
+        //检查消息发送者是否是本人
+        if(requestParam.getFromId() == null || (requestParam.getFromId() != 0 && !requestParam.getFromId().equals(UserContext.getUserId()))) {
+            throw new ServiceException(MESSAGE_SENDER_INCORRECT);
+        }
+        //检查消息接收者是否存在且不是系统
+        if(requestParam.getToId() == 0){
+            throw new ServiceException(MESSAGE_RECEIVER_ILLEGAL);
+        }
+        UserDO user = userMapper.selectById(requestParam.getToId());
+        if(user == null ) {
+            throw new ServiceException(MESSAGE_RECEIVER_ILLEGAL);
+        }
     }
 
     public void checkMessageValid(MessageUpdateReqDTO requestParam) {

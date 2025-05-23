@@ -68,13 +68,6 @@ public class QuestionController {
         return Results.success(questionService.getQuestionById(id));
     }
 
-    /**
-     * 提供问题获取推荐回答的用户信息
-     */
-    @GetMapping("/api/user/findAnswerers")
-    public Result<List<UserRespDTO>> findAnswerers(@RequestParam("questionId") Long questionId) {
-        return Results.success(questionService.findAnswerers(questionId));
-    }
 
     /**
      * 获取当前用户的提问列表

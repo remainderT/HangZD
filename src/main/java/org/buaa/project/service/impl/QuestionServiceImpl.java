@@ -106,12 +106,6 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, QuestionDO>
     }
 
     @Override
-    public List<UserRespDTO> findAnswerers(Long questionId){
-        //TODO
-        return new ArrayList<>();
-    }
-
-    @Override
     public void askUsers(AskUsersReqDTO requestParam) {
           Long questionId = requestParam.getQuestionId();
           List<Long> userIds = requestParam.getUserIds();
