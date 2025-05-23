@@ -8,9 +8,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.buaa.project.common.biz.user.UserContext;
 import org.buaa.project.common.convention.exception.ServiceException;
-import org.buaa.project.controller.WebSocketServer;
 import org.buaa.project.dao.entity.MessageDO;
-import org.buaa.project.dao.entity.QuestionDO;
 import org.buaa.project.dao.mapper.MessageMapper;
 import org.buaa.project.dto.req.message.MessageUpdateReqDTO;
 import org.buaa.project.dto.req.message.MessageUploadReqDTO;
@@ -23,7 +21,7 @@ import java.util.Objects;
 import static org.buaa.project.common.enums.MessageErrorCodeEnum.*;
 
 //import org.buaa.project.service.UserService;
-import org.springframework.stereotype.Service;
+
 
 /**
  * 消息接口实现层
@@ -96,11 +94,6 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageDO> im
         //message.setCreateTime();
         message.setGenerateId(0L);
         baseMapper.insert(message);
-
-        //websocket推送消息
-        String jsonMessage = JSON.toJSONString(message);
-        WebSocketServer.sendToUser(String.valueOf(requestParam.getToId()), jsonMessage);
-        WebSocketServer.sendToUser(String.valueOf(UserContext.getUserId()), jsonMessage);
     }
 
     @Override
