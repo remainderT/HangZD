@@ -33,6 +33,11 @@ public class MessageDO extends BaseDO {
     private Long toId;
 
     /**
+     * 会话id
+     */
+    private Long conversationId;
+
+    /**
      * 消息类型
      */
     private String type;

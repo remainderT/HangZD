@@ -33,6 +33,11 @@ public class ConversationDO extends BaseDO {
     private Long user2;
 
     /**
+     * 所属问题id
+     */
+    private Long questionId;
+
+    /**
      * 状态
      */
     private Integer status;
