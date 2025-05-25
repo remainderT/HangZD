@@ -19,16 +19,16 @@ public interface MessageService extends IService<MessageDO> {
     /**
      * 根据发送者id查询消息列表
      */
-    public List<MessageDO> getMessagesBySender(Long userId);
+    public List<MessageDO> getMessagesBySender(Long userId,Long conversationId);
 
     /**
      * 获取当前用户的消息列表
      */
-    public List<MessageDO> getUsersMessages();
+    public List<MessageDO> getUsersMessages(Long conversationId);
     /**
      * 根据发送者和接收者id查询消息列表
      */
-    public List<MessageDO> getMessagesBySenderAndReceiver(Long senderId, Long receiverId);
+    public List<MessageDO> getMessagesBySenderAndReceiver(Long senderId, Long receiverId,Long conversationId);
 
     /**
      * 添加消息
@@ -46,7 +46,7 @@ public interface MessageService extends IService<MessageDO> {
     /**
      * 消息按用户创建时间排序
      */
-    public List<MessageDO> sortMessagesByCreateTime();
+    public List<MessageDO> sortMessagesByCreateTime(Long conversationId);
 
     /**
      * 已读消息

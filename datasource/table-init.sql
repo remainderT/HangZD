@@ -88,8 +88,8 @@ CREATE TABLE `message` (
 DROP TABLE IF EXISTS `conversation`;
 CREATE TABLE `conversation` (
                             `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-                            `user_1` bigint(20) NOT NULL COMMENT '用户1ID',
-                            `user_2` bigint(20) NOT NULL COMMENT '用户2ID',
+                            `user1` bigint(20) NOT NULL COMMENT '用户1ID',
+                            `user2` bigint(20) NOT NULL COMMENT '用户2ID',
                             `question_id` bigint(20) NOT NULL COMMENT '问题ID',
                             `status` tinyint(1) NOT NULL DEFAULT 0 COMMENT '可见状态 1 user1 删除 2 user2 删除 3 都删除' ,
                             `create_time` datetime DEFAULT NULL COMMENT '创建时间',

@@ -40,12 +40,12 @@ public class ConversationServiceImpl extends ServiceImpl<ConversationMapper, Con
         // 根据当前用户判断对话是否对其可见
         Long currentUserId = UserContext.getUserId();
         // status = 1 表示 user1 删除，status = 3 表示都删除
-        if (Objects.equals(currentUserId, conversation.getUser1()) && 
+        if (Objects.equals(currentUserId, conversation.getUser1()) &&
             (conversation.getStatus() == 1 || conversation.getStatus() == 3)) {
             return false;
         }
         // status = 2 表示 user2 删除，status = 3 表示都删除
-        if (Objects.equals(currentUserId, conversation.getUser2()) && 
+        if (Objects.equals(currentUserId, conversation.getUser2()) &&
             (conversation.getStatus() == 2 || conversation.getStatus() == 3)) {
             return false;
         }
@@ -83,7 +83,9 @@ public class ConversationServiceImpl extends ServiceImpl<ConversationMapper, Con
                                 .notIn(ConversationDO::getStatus, 2, 3))) // user2不应该看到状态为2或3的对话
                 .eq(ConversationDO::getDelFlag, 0)
                 .orderByDesc(ConversationDO::getUpdateTime);
-        return baseMapper.selectList(queryWrapper);
+        List<ConversationDO> list = baseMapper.selectList(queryWrapper);
+        System.out.println("Here:"+list);
+        return list;
     }
 
     @Override
@@ -100,6 +102,9 @@ public class ConversationServiceImpl extends ServiceImpl<ConversationMapper, Con
         
         ConversationDO conversation = BeanUtil.toBean(requestParam, ConversationDO.class);
         conversation.setUser1(currentUserId);
+        conversation.setUser2(user2Id);
+        conversation.setQuestionId(questionId);
+        //System.out.println(conversation);
         baseMapper.insert(conversation);
     }
 
@@ -113,7 +118,7 @@ public class ConversationServiceImpl extends ServiceImpl<ConversationMapper, Con
         ConversationDO conversation = baseMapper.selectById(id);
         Long currentUserId = UserContext.getUserId();
         
-        if (!Objects.equals(currentUserId, conversation.getUser1()) && 
+        if (!Objects.equals(currentUserId, conversation.getUser1()) &&
             !Objects.equals(currentUserId, conversation.getUser2())) {
             throw new ServiceException(CONVERSATION_ACCESS_DENIED);
         }

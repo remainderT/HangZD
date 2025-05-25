@@ -8,8 +8,10 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.buaa.project.common.biz.user.UserContext;
 import org.buaa.project.common.convention.exception.ServiceException;
+import org.buaa.project.dao.entity.ConversationDO;
 import org.buaa.project.dao.entity.MessageDO;
 import org.buaa.project.dao.entity.UserDO;
+import org.buaa.project.dao.mapper.ConversationMapper;
 import org.buaa.project.dao.mapper.MessageMapper;
 import org.buaa.project.dao.mapper.UserMapper;
 import org.buaa.project.dto.req.message.MessageUpdateReqDTO;
@@ -33,6 +35,7 @@ import static org.buaa.project.common.enums.MessageErrorCodeEnum.*;
 public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageDO> implements MessageService {
     //private final UserService userService;
     private final UserMapper userMapper;
+    private final ConversationMapper conversationMapper;
 
     public boolean existsMessage(Long id) {
         MessageDO message = baseMapper.selectById(id);
@@ -60,27 +63,30 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageDO> im
     }
 
     @Override
-    public List<MessageDO> getMessagesBySender(Long userId) {
+    public List<MessageDO> getMessagesBySender(Long userId,Long conversationId) {
         LambdaQueryWrapper<MessageDO> queryWrapper = Wrappers.lambdaQuery(MessageDO.class)
                 .eq(MessageDO::getFromId, userId)
+                .eq(MessageDO::getConversationId,conversationId)
                 .eq(MessageDO::getDelFlag, 0)
                 .orderByDesc(MessageDO::getCreateTime);
         return baseMapper.selectList(queryWrapper);
     }
 
     @Override
-    public List<MessageDO> getUsersMessages(){
+    public List<MessageDO> getUsersMessages(Long conversationId){
         LambdaQueryWrapper<MessageDO> queryWrapper = Wrappers.lambdaQuery(MessageDO.class)
+                .eq(MessageDO::getConversationId , conversationId)
                 .eq(MessageDO::getDelFlag, 0)
                 .orderByDesc(MessageDO::getCreateTime);
         return baseMapper.selectList(queryWrapper);
     }
 
     @Override
-    public List<MessageDO> getMessagesBySenderAndReceiver(Long senderId, Long receiverId){
+    public List<MessageDO> getMessagesBySenderAndReceiver(Long senderId, Long receiverId,Long conversationId){
         LambdaQueryWrapper<MessageDO> queryWrapper = Wrappers.lambdaQuery(MessageDO.class)
                 .eq(MessageDO::getFromId, senderId)
                 .eq(MessageDO::getToId, receiverId)
+                .eq(MessageDO::getConversationId, conversationId)
                 .eq(MessageDO::getDelFlag, 0)
                 .orderByDesc(MessageDO::getCreateTime);
         return baseMapper.selectList(queryWrapper);
@@ -93,6 +99,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageDO> im
         message.setFromId(requestParam.getFromId());
         message.setStatus(0);//默认未读
         message.setDelFlag(0);//默认未删除
+        message.setConversationId(requestParam.getConversationId());
         //message.setCreateTime();
         message.setGenerateId(0L);
         baseMapper.insert(message);
@@ -123,9 +130,10 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageDO> im
     }
 
     @Override
-    public List<MessageDO> sortMessagesByCreateTime() {
+    public List<MessageDO> sortMessagesByCreateTime(Long conversationId) {
         LambdaQueryWrapper<MessageDO> queryWrapper = Wrappers.lambdaQuery(MessageDO.class)
                 .eq(MessageDO::getFromId, UserContext.getUserId())
+                .eq(MessageDO::getConversationId, conversationId)
                 .eq(MessageDO::getDelFlag, 0)
                 .orderByDesc(MessageDO::getCreateTime);
         return baseMapper.selectList(queryWrapper);
@@ -142,10 +150,18 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageDO> im
     }
 
     public void checkMessageValid(MessageUploadReqDTO requestParam) {
+        //System.out.println(requestParam);
         //检查消息内容是否为空
         if (requestParam.getContent() == null || requestParam.getContent().isEmpty()) {
             throw new ServiceException(MESSAGE_EMPTY_MESSAGE);
         }
+        //查看会话是否存在
+        Long conversationId = requestParam.getConversationId();
+        ConversationDO conversation = conversationMapper.selectById(conversationId);
+        if(conversation == null) {
+            throw new ServiceException(CONVERSATION_NOT_FOUND);
+        }
+
         //检查消息发送者是否是本人
         if(requestParam.getFromId() == null || (requestParam.getFromId() != 0 && !requestParam.getFromId().equals(UserContext.getUserId()))) {
             throw new ServiceException(MESSAGE_SENDER_INCORRECT);
