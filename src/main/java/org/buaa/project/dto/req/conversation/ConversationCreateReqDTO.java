@@ -12,4 +12,9 @@ public class ConversationCreateReqDTO {
      * 用户2ID
      */
     private Long user2;
+
+    /**
+     * 所属问题ID
+     */
+    private Long questionId;
 } 
