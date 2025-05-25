@@ -12,7 +12,7 @@ embedding_model = SentenceTransformer('uer/sbert-base-chinese-nli')
 DB_CONFIG = {
     'host': 'localhost',
     'user': 'root',
-    'password': 'xxxxxx', #你的数据库密码
+    'password': 'xxxxxx', # 你的数据库密码
     'database': 'hangzd',
     'port': 3306
 }
@@ -76,12 +76,28 @@ def load_users_from_mysql(sender_username):
     return users
 
 
+def load_questions_from_mysql():
+
+    connection = pymysql.connect(**DB_CONFIG)
+    cursor = connection.cursor(pymysql.cursors.DictCursor)
+
+    cursor.execute("""
+        SELECT *
+        FROM question
+        WHERE solved_flag = 1
+    """)
+    questions = cursor.fetchall()
+    cursor.close()
+    connection.close()
+
+    return questions
+
+
 @app.route("/recommend", methods=["POST"])
 def recommend():
     data = request.get_json()
     username = request.headers.get("username", "")
     question = data.get("question", "")
-
     if not question:
         return jsonify({"error": "Missing question"}), 400
 
@@ -99,7 +115,7 @@ def recommend():
                 np.atleast_2d(user_vec)
             )[0][0]
             act_score = compute_activity_score(user)
-
+            print(sim_score)
             final_score = sim_score * act_score
         scored_users.append((final_score, user))
 
@@ -116,6 +132,40 @@ def recommend():
     } for _, u in top_users]
 
     return jsonify(results)
+
+
+@app.route("/fetch_previous_questions", methods=["POST"])
+def fetch_previous_questions():
+    data = request.get_json()
+    current_question = data.get("question", "")
+    if not current_question:
+        return jsonify({"error": "Missing question"}), 400
+
+    # 当前问题向量
+    q_vec = embedding_model.encode(current_question)
+
+    # 获取历史已解决问题
+    questions = load_questions_from_mysql()
+    if not questions:
+        return jsonify([])
+
+    # 提取历史问题文本并编码
+    question_texts = [q["content"] for q in questions]
+    question_vecs = embedding_model.encode(question_texts)
+
+    # 计算相似度
+    similarities = cosine_similarity(np.atleast_2d(q_vec), question_vecs)[0]
+
+    # 将每条历史问题与其相似度配对
+    questions_with_score = list(zip(similarities, questions))
+
+    # 按相似度从高到低排序
+    questions_sorted = [q for _, q in sorted(questions_with_score, key=lambda x: x[0], reverse=True)]
+
+    # 取前10个问题（不含 similarity 字段）
+    return jsonify(questions_sorted[:10])
+
+
 
 
 if __name__ == "__main__":
