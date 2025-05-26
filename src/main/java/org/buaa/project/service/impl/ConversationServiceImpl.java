@@ -89,7 +89,7 @@ public class ConversationServiceImpl extends ServiceImpl<ConversationMapper, Con
     }
 
     @Override
-    public void createConversation(ConversationCreateReqDTO requestParam) {
+    public Long createConversation(ConversationCreateReqDTO requestParam) {
         Long currentUserId = UserContext.getUserId();
         Long user2Id = requestParam.getUser2();
         Long questionId = requestParam.getQuestionId();
@@ -106,6 +106,7 @@ public class ConversationServiceImpl extends ServiceImpl<ConversationMapper, Con
         conversation.setQuestionId(questionId);
         //System.out.println(conversation);
         baseMapper.insert(conversation);
+        return conversation.getId();
     }
 
     @Override

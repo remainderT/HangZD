@@ -23,9 +23,9 @@ public class ConversationController {
      * 创建会话
      */
     @PostMapping("/api/hangzd/conversation")
-    public Result<Void> createConversation(@RequestBody ConversationCreateReqDTO requestParam) {
-        conversationService.createConversation(requestParam);
-        return Results.success();
+    public Result<Long> createConversation(@RequestBody ConversationCreateReqDTO requestParam) {
+        Long cid = conversationService.createConversation(requestParam);
+        return Results.success(cid);
     }
 
     /**
