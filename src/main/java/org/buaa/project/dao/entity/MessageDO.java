@@ -53,7 +53,7 @@ public class MessageDO extends BaseDO {
     private Long generateId;
 
     /**
-     * 消息状态 (0-未读; 1-已读; 2-删除)
+     * 消息状态 (0-未读; 1-已读)
      */
     private Integer status;
 }

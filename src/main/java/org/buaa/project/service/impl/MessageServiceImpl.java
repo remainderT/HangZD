@@ -89,7 +89,15 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageDO> im
                 .eq(MessageDO::getConversationId, conversationId)
                 .eq(MessageDO::getDelFlag, 0)
                 .orderByDesc(MessageDO::getCreateTime);
-        return baseMapper.selectList(queryWrapper);
+        //更新状态位
+        List<MessageDO> messages = baseMapper.selectList(queryWrapper);
+        for( MessageDO message : messages) {
+            if (message.getStatus() == 0 && Objects.equals(UserContext.getUserId(), message.getToId())) {
+                message.setStatus(1); // 设置为已读
+                baseMapper.updateById(message);
+            }
+        }
+        return messages;
     }
 
     @Override
@@ -141,12 +149,12 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageDO> im
 
     @Override
     public void readMessage(Long id) {
-        if (!existsMessage(id)) {
+        /*if (!existsMessage(id)) {
             throw new ServiceException(MESSAGE_NOT_FOUND);
         }
         MessageDO message = baseMapper.selectById(id);
         message.setStatus(1); // 设置为已读
-        baseMapper.updateById(message);
+        baseMapper.updateById(message);*/
     }
 
     public void checkMessageValid(MessageUploadReqDTO requestParam) {
