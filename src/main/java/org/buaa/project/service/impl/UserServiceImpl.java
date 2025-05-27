@@ -263,6 +263,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
         UserDO userDO = baseMapper.selectOne(queryWrapper);
         
         String password = DigestUtils.md5DigestAsHex((requestParam.getOldPassword() + userDO.getSalt()).getBytes());
+        
         if (!Objects.equals(userDO.getPassword(), password)) {
             throw new ClientException(USER_PASSWORD_ERROR);
         }
