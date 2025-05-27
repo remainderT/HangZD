@@ -29,9 +29,10 @@ public class MessageUploadReqDTO {
      */
     private String type; // 与数据库中的 ENUM 类型对应
     /**
-     * 创建时间
+     * 所属会话id
      */
-    //private Date createTime;
+    private Long conversationId;
+
 
 
 }

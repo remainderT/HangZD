@@ -23,7 +23,7 @@ public class ImageController {
     /**
      * oss上传图片
      */
-    @PostMapping("/oss/upload")
+    @PostMapping("/api/hangzd/oss/upload")
     public Result<String> ossUploadImage(@RequestParam("file") MultipartFile file) {
         return Results.success(imageService.ossUploadImage(file));
     }

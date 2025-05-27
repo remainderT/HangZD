@@ -19,7 +19,7 @@ public interface ConversationService extends IService<ConversationDO> {
     /**
      * 创建会话
      */
-    public void createConversation(ConversationCreateReqDTO requestParam);
+    public Long createConversation(ConversationCreateReqDTO requestParam);
 
     /**
      * 删除会话

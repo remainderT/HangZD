@@ -71,6 +71,7 @@ CREATE TABLE `message` (
                            `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
                            `from_id` bigint(20) NOT NULL COMMENT '发送人ID 1就是系统消息',
                            `to_id` bigint(20) NOT NULL COMMENT '接收者ID',
+                           `conversation_id` bigint(20) NOT NULL COMMENT '会话ID',
                            `type` ENUM('system', 'like', 'answer', 'useful') NOT NULL COMMENT '消息类型',
                            `content` text   DEFAULT NULL COMMENT '内容',
                            `status` int(11) DEFAULT 0 COMMENT '0-未读;1-已读',
@@ -87,8 +88,9 @@ CREATE TABLE `message` (
 DROP TABLE IF EXISTS `conversation`;
 CREATE TABLE `conversation` (
                             `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-                            `user_1` bigint(20) NOT NULL COMMENT '用户1ID',
-                            `user_2` bigint(20) NOT NULL COMMENT '用户2ID',
+                            `user1` bigint(20) NOT NULL COMMENT '用户1ID',
+                            `user2` bigint(20) NOT NULL COMMENT '用户2ID',
+                            `question_id` bigint(20) NOT NULL COMMENT '问题ID',
                             `status` tinyint(1) NOT NULL DEFAULT 0 COMMENT '可见状态 1 user1 删除 2 user2 删除 3 都删除' ,
                             `create_time` datetime DEFAULT NULL COMMENT '创建时间',
                             `update_time` datetime DEFAULT NULL COMMENT '修改时间',

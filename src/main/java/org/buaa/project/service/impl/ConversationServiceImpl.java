@@ -26,7 +26,7 @@ import static org.buaa.project.common.enums.MessageErrorCodeEnum.*;
 public class ConversationServiceImpl extends ServiceImpl<ConversationMapper, ConversationDO> implements ConversationService {
 
     /**
-     * 检查会话是否存在
+     * 检查指定问题的会话是否存在
      */
     private boolean existsConversation(Long id) {
         ConversationDO conversation = baseMapper.selectById(id);
@@ -40,12 +40,12 @@ public class ConversationServiceImpl extends ServiceImpl<ConversationMapper, Con
         // 根据当前用户判断对话是否对其可见
         Long currentUserId = UserContext.getUserId();
         // status = 1 表示 user1 删除，status = 3 表示都删除
-        if (Objects.equals(currentUserId, conversation.getUser1()) && 
+        if (Objects.equals(currentUserId, conversation.getUser1()) &&
             (conversation.getStatus() == 1 || conversation.getStatus() == 3)) {
             return false;
         }
         // status = 2 表示 user2 删除，status = 3 表示都删除
-        if (Objects.equals(currentUserId, conversation.getUser2()) && 
+        if (Objects.equals(currentUserId, conversation.getUser2()) &&
             (conversation.getStatus() == 2 || conversation.getStatus() == 3)) {
             return false;
         }
@@ -54,9 +54,9 @@ public class ConversationServiceImpl extends ServiceImpl<ConversationMapper, Con
     }
 
     /**
-     * 根据两个用户ID查询会话
+     * 根据两个用户ID与问题id查询会话
      */
-    private ConversationDO getConversationByUserIds(Long user1Id, Long user2Id) {
+    private ConversationDO getConversationByUserIds(Long user1Id, Long user2Id, Long questionId) {
         LambdaQueryWrapper<ConversationDO> queryWrapper = Wrappers.lambdaQuery(ConversationDO.class)
                 .and(wrapper -> wrapper
                         .and(w -> w
@@ -65,7 +65,8 @@ public class ConversationServiceImpl extends ServiceImpl<ConversationMapper, Con
                         .or(w -> w
                                 .eq(ConversationDO::getUser1, user2Id)
                                 .eq(ConversationDO::getUser2, user1Id)))
-                .eq(ConversationDO::getDelFlag, 0);
+                .eq(ConversationDO::getDelFlag, 0)
+                .eq(ConversationDO::getQuestionId, questionId);
         return baseMapper.selectOne(queryWrapper);
     }
 
@@ -82,23 +83,30 @@ public class ConversationServiceImpl extends ServiceImpl<ConversationMapper, Con
                                 .notIn(ConversationDO::getStatus, 2, 3))) // user2不应该看到状态为2或3的对话
                 .eq(ConversationDO::getDelFlag, 0)
                 .orderByDesc(ConversationDO::getUpdateTime);
-        return baseMapper.selectList(queryWrapper);
+        List<ConversationDO> list = baseMapper.selectList(queryWrapper);
+        System.out.println("Here:"+list);
+        return list;
     }
 
     @Override
-    public void createConversation(ConversationCreateReqDTO requestParam) {
+    public Long createConversation(ConversationCreateReqDTO requestParam) {
         Long currentUserId = UserContext.getUserId();
         Long user2Id = requestParam.getUser2();
+        Long questionId = requestParam.getQuestionId();
         
         // 检查是否已存在会话
-        ConversationDO existingConversation = getConversationByUserIds(currentUserId, user2Id);
+        ConversationDO existingConversation = getConversationByUserIds(currentUserId, user2Id, questionId);
         if (existingConversation != null) {
             throw new ServiceException(CONVERSATION_ALREADY_EXISTS);
         }
         
         ConversationDO conversation = BeanUtil.toBean(requestParam, ConversationDO.class);
         conversation.setUser1(currentUserId);
+        conversation.setUser2(user2Id);
+        conversation.setQuestionId(questionId);
+        //System.out.println(conversation);
         baseMapper.insert(conversation);
+        return conversation.getId();
     }
 
     @Override
@@ -111,7 +119,7 @@ public class ConversationServiceImpl extends ServiceImpl<ConversationMapper, Con
         ConversationDO conversation = baseMapper.selectById(id);
         Long currentUserId = UserContext.getUserId();
         
-        if (!Objects.equals(currentUserId, conversation.getUser1()) && 
+        if (!Objects.equals(currentUserId, conversation.getUser1()) &&
             !Objects.equals(currentUserId, conversation.getUser2())) {
             throw new ServiceException(CONVERSATION_ACCESS_DENIED);
         }

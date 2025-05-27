@@ -31,25 +31,25 @@ public class MessageController {
     /**
      * 获取当前用户的消息列表
      */
-    @GetMapping("/api/hangzd/messages")
-    public Result<List<MessageDO>> getUsersMessages() {
-        return Results.success(messageService.getUsersMessages());
+    @GetMapping("/api/hangzd/messages/conv/{convId}")
+    public Result<List<MessageDO>> getUsersMessages(@PathVariable Long convId) {
+        return Results.success(messageService.getUsersMessages(convId));
     }
 
     /**
      * 根据发送者ID获取消息列表
      */
-    @GetMapping("/api/hangzd/messages/sender/{senderId}")
-    public Result<List<MessageDO>> getMessagesBySender(@PathVariable Long senderId) {
-        return Results.success(messageService.getMessagesBySender(senderId));
+    @GetMapping("/api/hangzd/messages/sender/{senderId}/conv/{convId}")
+    public Result<List<MessageDO>> getMessagesBySender(@PathVariable Long senderId,@PathVariable Long convId) {
+        return Results.success(messageService.getMessagesBySender(senderId,convId));
     }
 
     /**
      * 根据发送者和接收者ID获取消息列表
      */
-    @GetMapping("/api/hangzd/messages/sender/{senderId}/receiver/{receiverId}")
-    public Result<List<MessageDO>> getMessagesBySenderAndReceiver(@PathVariable Long senderId, @PathVariable Long receiverId) {
-        return Results.success(messageService.getMessagesBySenderAndReceiver(senderId, receiverId));
+    @GetMapping("/api/hangzd/messages/sender/{senderId}/receiver/{receiverId}/conv/{convId}")
+    public Result<List<MessageDO>> getMessagesBySenderAndReceiver(@PathVariable Long senderId, @PathVariable Long receiverId,@PathVariable Long convId) {
+        return Results.success(messageService.getMessagesBySenderAndReceiver(senderId, receiverId,convId));
     }
 
     /**
@@ -82,9 +82,9 @@ public class MessageController {
     /**
      * 将本用户发送的未删除的消息按照创建时间降序排序
      */
-    @GetMapping("/api/hangzd/messages/sort")
-    public Result<List<MessageDO>> sortMessagesByCreateTime() {
-        return Results.success(messageService.sortMessagesByCreateTime());
+    @GetMapping("/api/hangzd/messages/sort/conv/{convId}")
+    public Result<List<MessageDO>> sortMessagesByCreateTime(@PathVariable Long convId) {
+        return Results.success(messageService.sortMessagesByCreateTime(convId));
     }
 
     /**
