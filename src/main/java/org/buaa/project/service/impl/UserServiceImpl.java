@@ -259,6 +259,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
     public void changePassword(ChangePasswordReqDTO requestParam) {
         LambdaQueryWrapper<UserDO> queryWrapper = Wrappers.lambdaQuery(UserDO.class)
                 .eq(UserDO::getUsername, UserContext.getUsername());
+        
         UserDO userDO = baseMapper.selectOne(queryWrapper);
         
         String password = DigestUtils.md5DigestAsHex((requestParam.getOldPassword() + userDO.getSalt()).getBytes());
