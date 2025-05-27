@@ -3,13 +3,10 @@ package org.buaa.project.controller;
 import lombok.RequiredArgsConstructor;
 import org.buaa.project.common.convention.result.Result;
 import org.buaa.project.common.convention.result.Results;
-import org.buaa.project.dto.req.question.QuestionSolveReqDTO;
-import org.buaa.project.dto.req.question.QuestionUpdateReqDTO;
-import org.buaa.project.dto.req.question.QuestionUploadReqDTO;
-import org.buaa.project.dto.req.question.AskUsersReqDTO;
+import org.buaa.project.dto.req.question.*;
 import org.buaa.project.dto.resp.QuestionRespDTO;
 import org.buaa.project.dto.resp.QuestionUploadRespDTO;
-import org.buaa.project.dto.resp.UserRespDTO;
+import org.buaa.project.dto.resp.UserRecommendedRespDTO;
 import org.buaa.project.service.QuestionService;
 import org.springframework.web.bind.annotation.*;
 
@@ -84,6 +81,23 @@ public class QuestionController {
     public Result<Void> askUsers(@RequestBody AskUsersReqDTO requestParam) {
         questionService.askUsers(requestParam);
         return Results.success();
+    }
+    
+    /**
+     * 通过问题内容得到被推荐的用户
+     */
+    @PostMapping("/api/hangzd/question/recommend")
+    public Result<List<UserRecommendedRespDTO>> recommendUsers(@RequestBody RecommendUsersReqDTO requestParam) {
+        return Results.success(questionService.recommendUsers(requestParam));
+    }
+    
+    
+    /**
+     * 通过问题内容得到类似问题
+     */
+    @PostMapping("/api/hangzd/question/fetch_previous_questions")
+    public Result<List<QuestionRespDTO>> fetchPreviousQuestions(@RequestBody RecommendUsersReqDTO requestParam) {
+        return Results.success(questionService.fetchPreviousQuestions(requestParam));
     }
 }
 

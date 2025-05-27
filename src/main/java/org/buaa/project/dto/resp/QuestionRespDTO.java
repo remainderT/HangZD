@@ -13,41 +13,74 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class QuestionRespDTO {
+    
     /**
-     *  消息id
+     * 回答数
      */
-    private Long id;
+    private Integer answerCount;
+    
     /**
      * 分类ID
      */
-    private long categoryId;
-    /**
-     * 标题
-     */
-    private String title;
+    private Long categoryId;
+    
     /**
      * 内容
      */
     private String content;
-    /**
-     * 发布人ID
-     */
-    private Long userId;
-    /**
-     * 用户名
-     */
-    private String username;
-    /**
-     * 照片路径
-     */
-    private String images;
-    /**
-     * 浏览量
-     */
-    private Integer viewCount;
+    
     /**
      * 创建时间
      */
     private Date createTime;
-
+    
+    /**
+     * 删除标志
+     */
+    private Integer delFlag;
+    
+    /**
+     * 消息ID
+     */
+    private Long id;
+    
+    /**
+     * 图片路径
+     */
+    private String images;
+    
+    /**
+     * 点赞数
+     */
+    private Integer likeCount;
+    
+    /**
+     * 是否解决
+     */
+    private Integer solvedFlag;
+    
+    /**
+     * 标题
+     */
+    private String title;
+    
+    /**
+     * 更新时间
+     */
+    private Date updateTime;
+    
+    /**
+     * 用户ID
+     */
+    private Long userId;
+    
+    /**
+     * 用户名
+     */
+    private String username;
+    
+    /**
+     * 浏览量
+     */
+    private Integer viewCount;
 }

@@ -9,21 +9,20 @@ import org.buaa.project.common.biz.user.UserContext;
 import org.buaa.project.common.convention.exception.ServiceException;
 import org.buaa.project.dao.entity.QuestionDO;
 import org.buaa.project.dao.mapper.QuestionMapper;
-import org.buaa.project.dto.req.question.AskUsersReqDTO;
-import org.buaa.project.dto.req.question.QuestionSolveReqDTO;
-import org.buaa.project.dto.req.question.QuestionUpdateReqDTO;
-import org.buaa.project.dto.req.question.QuestionUploadReqDTO;
+import org.buaa.project.dto.req.question.*;
 import org.buaa.project.dto.resp.QuestionRespDTO;
 import org.buaa.project.dto.resp.QuestionUploadRespDTO;
-import org.buaa.project.dto.resp.UserRespDTO;
+import org.buaa.project.dto.resp.UserRecommendedRespDTO;
 import org.buaa.project.service.QuestionService;
 import org.buaa.project.service.UserActionService;
 import org.springframework.beans.BeanUtils;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.*;
 
 import static org.buaa.project.common.enums.QAErrorCodeEnum.QUESTION_NULL;
 import static org.buaa.project.common.enums.QAErrorCodeEnum.QUESTION_USER_INCORRECT;
@@ -115,5 +114,59 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, QuestionDO>
               userActionService.recommendQuestion(questionId, userId);
           }
     }
-
+    
+    @Override
+    public List<UserRecommendedRespDTO> recommendUsers(RecommendUsersReqDTO requestParam){
+        RestTemplate restTemplate = new RestTemplate();
+        String url = "http://localhost:4999/recommend";
+        
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("username", UserContext.getUsername());
+        
+        Map<String, String> body = new HashMap<>();
+        body.put("question", requestParam.getQuestion());
+        
+        
+        HttpEntity<Map<String, String>> request = new HttpEntity<>(body, headers);
+        
+        // 发起 POST 请求
+        ResponseEntity<List<UserRecommendedRespDTO>> response = restTemplate.exchange(
+                url,
+                HttpMethod.POST,
+                request,
+                new ParameterizedTypeReference<>() {}
+        );
+        
+        return response.getBody();
+    }
+    
+    @Override
+    public List<QuestionRespDTO> fetchPreviousQuestions(RecommendUsersReqDTO requestParam) {
+        RestTemplate restTemplate = new RestTemplate();
+        String url = "http://localhost:4999/fetch_previous_questions";  // 假设接口路径
+        
+        // 设置请求头
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("username", UserContext.getUsername());
+        
+        // 构造请求体
+        Map<String, String> body = new HashMap<>();
+        body.put("question", requestParam.getQuestion());
+        
+        // 封装请求实体
+        HttpEntity<Map<String, String>> request = new HttpEntity<>(body, headers);
+        
+        // 发送 POST 请求，接收 List<QuestionRespDTO>
+        ResponseEntity<List<QuestionRespDTO>> response = restTemplate.exchange(
+                url,
+                HttpMethod.POST,
+                request,
+                new ParameterizedTypeReference<>() {}
+        );
+        
+        return response.getBody();
+    }
+    
 }

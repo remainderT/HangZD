@@ -2,13 +2,12 @@ package org.buaa.project.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.buaa.project.dao.entity.QuestionDO;
-import org.buaa.project.dto.req.question.AskUsersReqDTO;
-import org.buaa.project.dto.req.question.QuestionSolveReqDTO;
-import org.buaa.project.dto.req.question.QuestionUpdateReqDTO;
-import org.buaa.project.dto.req.question.QuestionUploadReqDTO;
+import org.buaa.project.dto.req.question.*;
 import org.buaa.project.dto.resp.QuestionRespDTO;
 import org.buaa.project.dto.resp.QuestionUploadRespDTO;
+import org.buaa.project.dto.resp.UserRecommendedRespDTO;
 import org.buaa.project.dto.resp.UserRespDTO;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -57,4 +56,14 @@ public interface QuestionService extends IService<QuestionDO> {
      * 向用户提问
      */
     void askUsers(AskUsersReqDTO requestParam);
+    
+    /**
+     * 根据问题推荐回答者
+     */
+    List<UserRecommendedRespDTO> recommendUsers(RecommendUsersReqDTO requestParam);
+    
+    /**
+     * 根据问题返回类似过往问题
+     */
+    List<QuestionRespDTO> fetchPreviousQuestions(RecommendUsersReqDTO requestParam);
 }
