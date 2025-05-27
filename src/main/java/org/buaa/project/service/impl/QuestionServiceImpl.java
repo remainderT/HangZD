@@ -75,8 +75,11 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, QuestionDO>
         QuestionDO questionDO = baseMapper.selectById(requestParam.getId());
         checkQuestionExist(questionDO);
         checkQuestionOwner(questionDO);
-
-        questionDO.setSolvedFlag(1);
+        if(requestParam.getSatisfied()) {
+            questionDO.setSolvedFlag(1);
+        }   else {
+            questionDO.setSolvedFlag(2);
+        }
         baseMapper.updateById(questionDO);
     }
 

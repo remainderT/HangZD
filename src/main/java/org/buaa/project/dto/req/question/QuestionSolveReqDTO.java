@@ -12,4 +12,10 @@ public class QuestionSolveReqDTO {
      * 问题id
      */
     private Long id;
+
+    /**
+     * 是否满意
+     */
+
+    private Boolean satisfied;
 }

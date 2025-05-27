@@ -39,14 +39,14 @@ public class ConversationServiceImpl extends ServiceImpl<ConversationMapper, Con
         
         // 根据当前用户判断对话是否对其可见
         Long currentUserId = UserContext.getUserId();
-        // status = 1 表示 user1 删除，status = 3 表示都删除
+        // display_status = 1 表示 user1 删除，display_status = 3 表示都删除
         if (Objects.equals(currentUserId, conversation.getUser1()) &&
-            (conversation.getStatus() == 1 || conversation.getStatus() == 3)) {
+            (conversation.getDisplayStatus() == 1 || conversation.getDisplayStatus() == 3)) {
             return false;
         }
-        // status = 2 表示 user2 删除，status = 3 表示都删除
+        // display_status = 2 表示 user2 删除，display_status = 3 表示都删除
         if (Objects.equals(currentUserId, conversation.getUser2()) &&
-            (conversation.getStatus() == 2 || conversation.getStatus() == 3)) {
+            (conversation.getDisplayStatus() == 2 || conversation.getDisplayStatus() == 3)) {
             return false;
         }
         
@@ -77,10 +77,10 @@ public class ConversationServiceImpl extends ServiceImpl<ConversationMapper, Con
                 .and(wrapper -> wrapper
                         .and(w -> w
                                 .eq(ConversationDO::getUser1, userId)
-                                .notIn(ConversationDO::getStatus, 1, 3)) // user1不应该看到状态为1或3的对话
+                                .notIn(ConversationDO::getDisplayStatus, 1, 3)) // user1不应该看到状态为1或3的对话
                         .or(w -> w
                                 .eq(ConversationDO::getUser2, userId)
-                                .notIn(ConversationDO::getStatus, 2, 3))) // user2不应该看到状态为2或3的对话
+                                .notIn(ConversationDO::getDisplayStatus, 2, 3))) // user2不应该看到状态为2或3的对话
                 .eq(ConversationDO::getDelFlag, 0)
                 .orderByDesc(ConversationDO::getUpdateTime);
         List<ConversationDO> list = baseMapper.selectList(queryWrapper);
@@ -128,7 +128,7 @@ public class ConversationServiceImpl extends ServiceImpl<ConversationMapper, Con
         ConversationDO updateConversation = new ConversationDO();
         updateConversation.setId(id);
         
-        Integer currentStatus = conversation.getStatus();
+        Integer currentStatus = conversation.getDisplayStatus();
         Integer newStatus = currentStatus;
         
         // 根据当前用户和当前状态，设置新状态
@@ -146,7 +146,7 @@ public class ConversationServiceImpl extends ServiceImpl<ConversationMapper, Con
             }
         }
         
-        updateConversation.setStatus(newStatus);
+        updateConversation.setDisplayStatus(newStatus);
         
         // 如果状态为3（都删除），则可以物理删除
         if (newStatus == 3) {

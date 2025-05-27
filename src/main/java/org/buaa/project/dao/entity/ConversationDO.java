@@ -38,9 +38,12 @@ public class ConversationDO extends BaseDO {
     private Long questionId;
 
     /**
-     * 状态
+     * 展示状态
+     */
+    private Integer displayStatus;
+
+    /**
+     * 会话状态
      */
     private Integer status;
-
-
 } 
