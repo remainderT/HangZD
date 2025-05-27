@@ -266,17 +266,23 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
             throw new ClientException(USER_PASSWORD_ERROR);
         }
         
-        String newPassword = DigestUtils.md5DigestAsHex((requestParam.getNewPassword() + UserContext.getSalt()).getBytes());
+        String newPassword = DigestUtils.md5DigestAsHex((requestParam.getNewPassword() + userDO.getSalt()).getBytes());
         
         LambdaUpdateWrapper<UserDO> updateWrapper = Wrappers.lambdaUpdate(UserDO.class)
                 .eq(UserDO::getUsername, UserContext.getUsername())
                 .set(UserDO::getPassword, newPassword);
-        baseMapper.update(null, updateWrapper);
-        if (checkLogin(UserContext.getUsername(), UserContext.getToken())) {
-            stringRedisTemplate.delete(USER_LOGIN_KEY + UserContext.getUsername());
-            return;
+        
+        int updated = baseMapper.update(null, updateWrapper);
+        if (updated == 0) {
+            throw new ClientException("修改密码失败");
         }
-        throw new ClientException(USER_TOKEN_NULL);
+        
+        stringRedisTemplate.delete(USER_LOGIN_KEY + UserContext.getUsername());
+        UserDO updatedUser = baseMapper.selectOne(queryWrapper);
+        stringRedisTemplate.opsForValue().set(
+                USER_INFO_KEY + UserContext.getUsername(),
+                JSON.toJSONString(updatedUser)
+        );
     }
     
     @Override
