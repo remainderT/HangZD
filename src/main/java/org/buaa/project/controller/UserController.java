@@ -4,6 +4,7 @@ import jakarta.servlet.ServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.buaa.project.common.convention.result.Result;
 import org.buaa.project.common.convention.result.Results;
+import org.buaa.project.dao.entity.UserDO;
 import org.buaa.project.dto.req.question.QuestionUploadReqDTO;
 import org.buaa.project.dto.req.user.*;
 import org.buaa.project.dto.resp.*;
@@ -122,6 +123,14 @@ public class UserController {
     public Result<Void> updateUserTags(@RequestBody UpdateUserTagsReqDTO requestParam) {
         userService.updateTags(requestParam);
         return Results.success();
+    }
+
+    /**
+     * 通过id获取用户信息
+     */
+    @GetMapping("/api/hangzd/user/id/{id}")
+    public Result<UserDO> getUserById(@PathVariable("id") Long id) {
+        return Results.success(userService.getUserById(id));
     }
 
 }

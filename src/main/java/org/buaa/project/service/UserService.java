@@ -74,4 +74,8 @@ public interface UserService extends IService<UserDO> {
      */
     void updateTags(UpdateUserTagsReqDTO requestParam);
 
+    /**
+    * 通过id获取用户信息
+    */
+    UserDO getUserById(Long id);
 }

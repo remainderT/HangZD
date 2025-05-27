@@ -49,7 +49,7 @@ spring:
 flow-limit:
   enable: true
   time-window: 1
-  max-access-count: 5
+  max-access-count: 20
 
 
 mybatis-plus:

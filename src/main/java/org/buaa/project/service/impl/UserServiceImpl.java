@@ -324,4 +324,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
         );
     }
 
+    @Override
+    public UserDO getUserById(Long id) {
+        UserDO userDO = baseMapper.selectById(id);
+        if (userDO == null) {
+            throw new ClientException(USER_NULL);
+        }
+        return userDO;
+    }
+
 }
