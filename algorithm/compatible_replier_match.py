@@ -12,7 +12,7 @@ embedding_model = SentenceTransformer('uer/sbert-base-chinese-nli')
 DB_CONFIG = {
     'host': 'localhost',
     'user': 'root',
-    'password': 'AnotherStrongP@ssw0rd!2023', # 你的数据库密码
+    'password': 'xxxxxx', # 你的数据库密码
     'database': 'hangzd',
     'port': 3306
 }
