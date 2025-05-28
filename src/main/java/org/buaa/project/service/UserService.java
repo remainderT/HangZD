@@ -78,4 +78,9 @@ public interface UserService extends IService<UserDO> {
     * 通过id获取用户信息
     */
     UserDO getUserById(Long id);
+
+    /**
+     * 改变用户的默认公开状态
+     */
+    Integer alterDefaultPublic();
 }

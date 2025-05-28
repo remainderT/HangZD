@@ -84,4 +84,9 @@ public class UserDO extends BaseDO {
      * 最新活跃时间
      */
     private Date lastActiveTime;
+
+    /**
+     * '默认公开状态 0-不公开;1-公开'
+     */
+    private Integer defaultPublic;
 }

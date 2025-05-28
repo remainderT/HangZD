@@ -45,4 +45,22 @@ public class ConversationController {
         conversationService.deleteConversation(id);
         return Results.success();
     }
+
+    /**
+     * 设置是否公开选项
+     */
+    @PutMapping("/api/hangzd/conversation/{id}/public")
+    public Result<Integer> setConversationPublic(@PathVariable Long id, @RequestParam Boolean isPublic) {
+        Integer newStatus = conversationService.setConversationPublic(id, isPublic);
+        return Results.success(newStatus);
+    }
+
+    /**
+     * 结束该会话
+     */
+    @PutMapping("/api/hangzd/conversation/{id}/end")
+    public Result<Void> endConversation(@PathVariable Long id) {
+        conversationService.endConversation(id);
+        return Results.success();
+    }
 }

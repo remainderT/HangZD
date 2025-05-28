@@ -19,7 +19,9 @@ public enum MessageErrorCodeEnum implements IErrorCode {
 
     CONVERSATION_ALREADY_EXISTS("D000202", "会话已存在"),
 
-    CONVERSATION_ACCESS_DENIED("D000203", "无权访问该会话");
+    CONVERSATION_ACCESS_DENIED("D000203", "无权访问该会话"),
+
+    CONVERSATION_STATE_ERROR("D000204", "会话状态错误"),;
 
 
     private final String code;

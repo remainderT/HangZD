@@ -46,4 +46,14 @@ public class ConversationDO extends BaseDO {
      * 会话状态
      */
     private Integer status;
+
+    /**
+     * 默认公开状态 0-不公开;1-公开
+     */
+    private Integer defaultPublic;
+
+    /**
+     * 接收者公开状态 0-不公开;1-公开
+     */
+    private Integer answererPublic;
 } 

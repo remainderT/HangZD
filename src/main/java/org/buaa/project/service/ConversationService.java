@@ -25,4 +25,14 @@ public interface ConversationService extends IService<ConversationDO> {
      * 删除会话
      */
     public void deleteConversation(Long id);
+
+    /**
+     * 设置是否公开选项
+     */
+    public Integer setConversationPublic(Long id , Boolean isPublic);
+
+    /**
+     * 结束该对话
+     */
+    public void endConversation(Long id);
 } 

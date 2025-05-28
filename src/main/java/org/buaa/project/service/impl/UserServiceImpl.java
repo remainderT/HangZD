@@ -333,4 +333,24 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
         return userDO;
     }
 
+    @Override
+    public Integer alterDefaultPublic() {
+        Long userId = UserContext.getUserId();
+        UserDO userDO = baseMapper.selectById(userId);
+        if (userDO == null) {
+            throw new ClientException(USER_NULL);
+        }
+
+        Integer defaultPublic = userDO.getDefaultPublic();
+        defaultPublic = (defaultPublic + 1) % 2;
+        userDO.setDefaultPublic(defaultPublic);
+        baseMapper.updateById(userDO);
+
+        //更新redis
+        stringRedisTemplate.delete(USER_INFO_KEY + UserContext.getUsername());
+        stringRedisTemplate.opsForValue().set(USER_LOGIN_KEY + UserContext.getUsername(), UserContext.getToken(), USER_LOGIN_EXPIRE_KEY, TimeUnit.DAYS);
+        stringRedisTemplate.opsForValue().set(USER_INFO_KEY + UserContext.getUsername(), JSON.toJSONString(userDO));
+        return defaultPublic;
+    }
+
 }

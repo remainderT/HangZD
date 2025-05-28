@@ -8,7 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.buaa.project.common.biz.user.UserContext;
 import org.buaa.project.common.convention.exception.ServiceException;
 import org.buaa.project.dao.entity.ConversationDO;
+import org.buaa.project.dao.entity.UserDO;
 import org.buaa.project.dao.mapper.ConversationMapper;
+import org.buaa.project.dao.mapper.UserMapper;
 import org.buaa.project.dto.req.conversation.ConversationCreateReqDTO;
 import org.buaa.project.service.ConversationService;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,7 @@ import static org.buaa.project.common.enums.MessageErrorCodeEnum.*;
 @RequiredArgsConstructor
 public class ConversationServiceImpl extends ServiceImpl<ConversationMapper, ConversationDO> implements ConversationService {
 
+    private final UserMapper userMapper;
     /**
      * 检查指定问题的会话是否存在
      */
@@ -104,6 +107,8 @@ public class ConversationServiceImpl extends ServiceImpl<ConversationMapper, Con
         conversation.setUser1(currentUserId);
         conversation.setUser2(user2Id);
         conversation.setQuestionId(questionId);
+        UserDO user2 = userMapper.selectById(user2Id);
+        conversation.setDefaultPublic(user2.getDefaultPublic());
         //System.out.println(conversation);
         baseMapper.insert(conversation);
         return conversation.getId();
@@ -154,5 +159,73 @@ public class ConversationServiceImpl extends ServiceImpl<ConversationMapper, Con
         }
         
         baseMapper.updateById(updateConversation);
+    }
+
+    @Override
+    public Integer setConversationPublic(Long conversationId,Boolean isPublic){
+        if (!existsConversation(conversationId)) {
+            throw new ServiceException(CONVERSATION_NOT_FOUND);
+        }
+
+        // 检查当前用户是否是会话参与者
+        ConversationDO conversation = baseMapper.selectById(conversationId);
+        Long currentUserId = UserContext.getUserId();
+
+        if (!Objects.equals(currentUserId, conversation.getUser1()) &&
+            !Objects.equals(currentUserId, conversation.getUser2())) {
+            throw new ServiceException(CONVERSATION_ACCESS_DENIED);
+        }
+
+        if(conversation.getStatus() != 1) {
+            throw new ServiceException(CONVERSATION_STATE_ERROR);
+        }
+        // 更新会话的公开状态
+
+        if(Objects.equals(conversation.getUser1(), UserContext.getUserId())) {
+            if(isPublic && (getAnswererPublicity(conversation) == 1)) {
+                //更新status 为2(双方都同意公开)
+                conversation.setStatus(2);
+            }
+        } else {
+            if(isPublic) {
+                conversation.setAnswererPublic(1);
+            } else {
+                conversation.setAnswererPublic(0);
+            }
+
+        }
+
+        baseMapper.updateById(conversation);
+        return conversation.getStatus();
+    }
+
+    public Integer getAnswererPublicity(ConversationDO conversationDO) {
+        if(conversationDO.getAnswererPublic() == null) {
+            return conversationDO.getDefaultPublic();
+        } else {
+            return conversationDO.getAnswererPublic();
+        }
+    }
+
+    @Override
+    public void endConversation(Long id) {
+        if (!existsConversation(id)) {
+            throw new ServiceException(CONVERSATION_NOT_FOUND);
+        }
+
+        // 检查当前用户是否是会话发起者
+        ConversationDO conversation = baseMapper.selectById(id);
+        Long currentUserId = UserContext.getUserId();
+
+        if (!Objects.equals(currentUserId, conversation.getUser1())) {
+            throw new ServiceException(CONVERSATION_ACCESS_DENIED);
+        }
+        if (conversation.getStatus() != 0) {
+            throw new ServiceException(CONVERSATION_STATE_ERROR);
+        }
+
+        // 更新会话状态为结束
+        conversation.setStatus(1); // 0表示已结束
+        baseMapper.updateById(conversation);
     }
 } 

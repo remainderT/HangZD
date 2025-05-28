@@ -133,5 +133,14 @@ public class UserController {
         return Results.success(userService.getUserById(id));
     }
 
+    /**
+     * 修改默认公开状态
+     */
+    @PutMapping("/api/hangzd/user/default-public")
+    public Result<Integer> alterDefaultPublic() {
+        Integer newState = userService.alterDefaultPublic();
+        return Results.success(newState);
+    }
+
 }
 

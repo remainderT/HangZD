@@ -171,7 +171,8 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageDO> im
         }
 
         //检查消息发送者是否是本人
-        if(requestParam.getFromId() == null || (requestParam.getFromId() != 0 && !requestParam.getFromId().equals(UserContext.getUserId()))) {
+        if(requestParam.getFromId() == null || (requestParam.getFromId() != 0 &&
+                !requestParam.getFromId().equals(UserContext.getUserId()) && !requestParam.getToId().equals(UserContext.getUserId()))) {
             throw new ServiceException(MESSAGE_SENDER_INCORRECT);
         }
         //检查消息接收者是否存在且不是系统
