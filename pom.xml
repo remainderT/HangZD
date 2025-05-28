@@ -25,6 +25,7 @@
         <guava.version>30.0-jre</guava.version>
         <aliyun-sdk-oss.version>3.15.1</aliyun-sdk-oss.version>
         <kaptcha.version>2.3.2</kaptcha.version>
+        <rest-high-level-client.version>7.17.10</rest-high-level-client.version>
     </properties>
 
     <dependencies>
@@ -115,6 +116,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.elasticsearch.client</groupId>
+            <artifactId>elasticsearch-rest-high-level-client</artifactId>
+            <version>${rest-high-level-client.version}</version>
         </dependency>
     </dependencies>
     <build>
