@@ -46,6 +46,10 @@ spring:
       max-file-size: 5MB
       max-request-size: 5MB
 
+  elasticsearch:
+    username: elastic
+    password: ysh030605
+
 flow-limit:
   enable: true
   time-window: 1
@@ -56,6 +60,12 @@ mybatis-plus:
   global-config:
     db-config:
       id-type: auto
+
+elasticsearch:
+  host: nurl.top
+  index-name: question
+
+
 
 
 
