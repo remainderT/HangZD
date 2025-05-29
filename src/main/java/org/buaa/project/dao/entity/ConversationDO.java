@@ -56,4 +56,9 @@ public class ConversationDO extends BaseDO {
      * 接收者公开状态 0-不公开;1-公开
      */
     private Integer answererPublic;
+
+    /**
+     * 点赞数
+     */
+    private Integer likeCount;
 } 

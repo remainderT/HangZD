@@ -96,6 +96,7 @@ CREATE TABLE `conversation` (
                             `status` tinyint(1) NOT NULL DEFAULT 0 COMMENT '会话状态 0-已开始;1-已结束未协商公开;2-已结束协商公开',
                             `default_public` tinyint(1) NOT NULL COMMENT '默认公开状态 0-不公开;1-公开',
                             `answerer_public` tinyint(1) COMMENT '回答者公开状态 0-不公开;1-公开',
+                            `like_count` int(11) DEFAULT 0 COMMENT '点赞数',
                             `create_time` datetime DEFAULT NULL COMMENT '创建时间',
                             `update_time` datetime DEFAULT NULL COMMENT '修改时间',
                             `del_flag` tinyint(1) DEFAULT NULL COMMENT '删除标识 0：未删除 1：已删除',

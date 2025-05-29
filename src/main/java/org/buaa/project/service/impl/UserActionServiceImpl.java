@@ -7,14 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.buaa.project.common.biz.user.UserContext;
 import org.buaa.project.common.enums.EntityTypeEnum;
 import org.buaa.project.common.enums.UserActionTypeEnum;
-import org.buaa.project.dao.entity.AnswerDO;
-import org.buaa.project.dao.entity.QuestionDO;
-import org.buaa.project.dao.entity.UserActionDO;
-import org.buaa.project.dao.entity.UserDO;
-import org.buaa.project.dao.mapper.AnswerMapper;
-import org.buaa.project.dao.mapper.QuestionMapper;
-import org.buaa.project.dao.mapper.UserActionMapper;
-import org.buaa.project.dao.mapper.UserMapper;
+import org.buaa.project.dao.entity.*;
+import org.buaa.project.dao.mapper.*;
 import org.buaa.project.service.UserActionService;
 import org.buaa.project.toolkit.RedisCount;
 import org.redisson.api.RLock;
@@ -40,7 +34,9 @@ public class UserActionServiceImpl extends ServiceImpl<UserActionMapper, UserAct
 
     private final QuestionMapper questionMapper;
 
-    private final AnswerMapper answerMapper;
+    //private final AnswerMapper answerMapper;
+
+    private final ConversationMapper conversationMapper;
 
     private final StringRedisTemplate stringRedisTemplate;
 
@@ -59,8 +55,9 @@ public class UserActionServiceImpl extends ServiceImpl<UserActionMapper, UserAct
                     .entityId(entityId)
                     .likeStat(0)
                     .collectStat(0)
-                    .collectStat(0)
+                    .recommendStat(0)
                     .build();
+            baseMapper.insert(userActionDO);
         }
         return userActionDO;
     }
@@ -77,7 +74,8 @@ public class UserActionServiceImpl extends ServiceImpl<UserActionMapper, UserAct
             UserActionDO userAction = getUserAction(userId, entityType, entityId);
             UserDO userFrom;
             UserDO userTo;
-            AnswerDO answer;
+            //AnswerDO answer;
+            ConversationDO conversation;
             QuestionDO question;
             Long entityUserId;
             switch (actionType) {
@@ -96,16 +94,16 @@ public class UserActionServiceImpl extends ServiceImpl<UserActionMapper, UserAct
                         }
                         entityUserId = question.getUserId();
                     } else {
-                        answer = answerMapper.selectById(entityId);
-                        answer.setLikeCount(answer.getLikeCount() + (isPositive ? 1 : -1));
-                        answerMapper.updateById(answer);
+                        conversation = conversationMapper.selectById(entityId);
+                        conversation.setLikeCount(conversation.getLikeCount() + (isPositive ? 1 : -1));
+                        conversationMapper.updateById(conversation);
                         redisCount.hIncr(ANSWER_COUNT_KEY + entityId, "like", isPositive ? 1 : -1);
                         if (isPositive) {
                             stringRedisTemplate.opsForSet().add(ANSWER_LIKE_SET_KEY + entityId, userId.toString());
                         } else {
                             stringRedisTemplate.opsForSet().remove(ANSWER_LIKE_SET_KEY + entityId, userId.toString());
                         }
-                        entityUserId = answer.getUserId();
+                        entityUserId = conversation.getUser2();
                     }
                     userTo = userMapper.selectById(entityUserId);
                     userTo.setLikeCount(userTo.getLikeCount() + (isPositive ? 1 : -1));

@@ -288,8 +288,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
     
     @Override
     public void likeUser(LikeUserReqDTO requestParam) {
-        Long id = requestParam.getId();
-        userActionService.collectAndLike(EntityTypeEnum.USER, id, UserActionTypeEnum.LIKE);
+        Long cid = requestParam.getCid();
+        userActionService.collectAndLike(EntityTypeEnum.USER, cid, UserActionTypeEnum.LIKE);
     }
     
     @Override

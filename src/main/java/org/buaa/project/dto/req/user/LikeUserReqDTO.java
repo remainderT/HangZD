@@ -9,7 +9,7 @@ import lombok.Data;
 public class LikeUserReqDTO {
 
     /**
-     * 用户id
+     * 会话id
      */
-    private Long id;
+    private Long cid;
 } 
