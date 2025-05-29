@@ -1,6 +1,7 @@
 package org.buaa.project.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.buaa.project.common.convention.result.Result;
 import org.buaa.project.dao.entity.ConversationDO;
 import org.buaa.project.dto.req.conversation.ConversationCreateReqDTO;
 
@@ -35,4 +36,9 @@ public interface ConversationService extends IService<ConversationDO> {
      * 结束该对话
      */
     public void endConversation(Long id);
+
+    /**
+     * 获取所有已公开会话
+     */
+    public List<ConversationDO> getPublicConversations();
 } 

@@ -63,4 +63,13 @@ public class ConversationController {
         conversationService.endConversation(id);
         return Results.success();
     }
+
+    /**
+     * 获取所有已公开会话
+     */
+    @GetMapping("/api/hangzd/conversations/public")
+    public Result<List<ConversationDO>> getPublicConversations() {
+        List<ConversationDO> publicConversations = conversationService.getPublicConversations();
+        return Results.success(publicConversations);
+    }
 }

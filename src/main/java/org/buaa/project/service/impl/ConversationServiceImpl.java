@@ -228,4 +228,13 @@ public class ConversationServiceImpl extends ServiceImpl<ConversationMapper, Con
         conversation.setStatus(1); // 0表示已结束
         baseMapper.updateById(conversation);
     }
+
+    public List<ConversationDO> getPublicConversations() {
+        LambdaQueryWrapper<ConversationDO> queryWrapper = Wrappers.lambdaQuery(ConversationDO.class)
+                .eq(ConversationDO::getDelFlag, 0)
+                .eq(ConversationDO::getStatus, 2) // 仅获取已公开的会话
+                .orderByDesc(ConversationDO::getUpdateTime);
+        List<ConversationDO> list = baseMapper.selectList(queryWrapper);
+        return list;
+    }
 } 
