@@ -107,6 +107,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageDO> im
         message.setFromId(requestParam.getFromId());
         message.setStatus(0);//默认未读
         message.setDelFlag(0);//默认未删除
+        message.setType("answer");
         message.setConversationId(requestParam.getConversationId());
         //message.setCreateTime();
         message.setGenerateId(0L);

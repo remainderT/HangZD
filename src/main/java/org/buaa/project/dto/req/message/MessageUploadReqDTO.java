@@ -27,7 +27,7 @@ public class MessageUploadReqDTO {
     /**
      * 消息类型
      */
-    private String type; // 与数据库中的 ENUM 类型对应
+    //private String type; // 与数据库中的 ENUM 类型对应
     /**
      * 所属会话id
      */
