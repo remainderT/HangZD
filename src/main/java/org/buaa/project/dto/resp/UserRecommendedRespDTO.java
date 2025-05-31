@@ -9,6 +9,7 @@ import java.util.List;
  */
 @Data
 public class UserRecommendedRespDTO {
+    
     /**
      * 活跃天数
      */
@@ -33,7 +34,7 @@ public class UserRecommendedRespDTO {
     /**
      * 点赞数
      */
-    private Integer likeCount;
+    private Integer like_count;
     
     /**
      * 用户标签
@@ -49,4 +50,5 @@ public class UserRecommendedRespDTO {
      * 用户名
      */
     private String username;
+    
 }
