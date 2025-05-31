@@ -43,4 +43,8 @@ public interface ConversationService extends IService<ConversationDO> {
      * 获取所有已公开会话
      */
     public ConversationAllRespDTO getPublicConversations(ConversationPageReqDTO requestParam);
-} 
+    /**
+     * 获取会话状态
+     */
+    public Integer getConversationStatus(Long id);
+}

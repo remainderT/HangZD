@@ -73,4 +73,12 @@ public class ConversationController {
     public Result<ConversationAllRespDTO> getPublicConversations(ConversationPageReqDTO requestParam) {
         return Results.success(conversationService.getPublicConversations(requestParam));
     }
+
+    /**
+     * 获取会话状态
+     */
+    @GetMapping("/api/hangzd/conversation/{id}/status")
+    public Result<Integer> getConversationStatus(@PathVariable Long id) {
+        return Results.success(conversationService.getConversationStatus(id));
+    }
 }

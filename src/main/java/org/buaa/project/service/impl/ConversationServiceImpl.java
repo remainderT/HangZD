@@ -241,4 +241,13 @@ public class ConversationServiceImpl extends ServiceImpl<ConversationMapper, Con
         return esService.search(requestParam);
     }
 
+    @Override
+    public Integer getConversationStatus(Long id) {
+        if (!existsConversation(id)) {
+            throw new ServiceException(CONVERSATION_NOT_FOUND);
+        }
+        ConversationDO conversation = baseMapper.selectById(id);
+        return conversation.getStatus();
+    }
+
 } 
