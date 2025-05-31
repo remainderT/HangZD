@@ -13,6 +13,7 @@ import org.buaa.project.dao.mapper.ConversationMapper;
 import org.buaa.project.dao.mapper.UserMapper;
 import org.buaa.project.dto.req.conversation.ConversationCreateReqDTO;
 import org.buaa.project.service.ConversationService;
+import org.buaa.project.service.EsService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,6 +29,9 @@ import static org.buaa.project.common.enums.MessageErrorCodeEnum.*;
 public class ConversationServiceImpl extends ServiceImpl<ConversationMapper, ConversationDO> implements ConversationService {
 
     private final UserMapper userMapper;
+
+    private final EsService esService;
+
     /**
      * 检查指定问题的会话是否存在
      */
@@ -185,6 +189,8 @@ public class ConversationServiceImpl extends ServiceImpl<ConversationMapper, Con
             if(isPublic && (getAnswererPublicity(conversation) == 1)) {
                 //更新status 为2(双方都同意公开)
                 conversation.setStatus(2);
+                // 同步到 ES
+                esService.insert(conversation);
             }
         } else {
             if(isPublic) {
@@ -230,6 +236,7 @@ public class ConversationServiceImpl extends ServiceImpl<ConversationMapper, Con
     }
 
     public List<ConversationDO> getPublicConversations() {
+        // todo  ES 查询
         LambdaQueryWrapper<ConversationDO> queryWrapper = Wrappers.lambdaQuery(ConversationDO.class)
                 .eq(ConversationDO::getDelFlag, 0)
                 .eq(ConversationDO::getStatus, 2) // 仅获取已公开的会话
@@ -237,4 +244,5 @@ public class ConversationServiceImpl extends ServiceImpl<ConversationMapper, Con
         List<ConversationDO> list = baseMapper.selectList(queryWrapper);
         return list;
     }
+
 } 
