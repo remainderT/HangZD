@@ -97,6 +97,27 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageDO> im
                 baseMapper.updateById(message);
             }
         }
+        //新建会话浏览UserAction
+
+        return messages;
+    }
+
+    @Override
+    public List<MessageDO> getMessagesByConvId(Long conversationId){
+        LambdaQueryWrapper<MessageDO> queryWrapper = Wrappers.lambdaQuery(MessageDO.class)
+                .eq(MessageDO::getConversationId, conversationId)
+                .eq(MessageDO::getDelFlag, 0)
+                .orderByDesc(MessageDO::getCreateTime);
+        //更新状态位
+        List<MessageDO> messages = baseMapper.selectList(queryWrapper);
+        for( MessageDO message : messages) {
+            if (message.getStatus() == 0 && Objects.equals(UserContext.getUserId(), message.getToId())) {
+                message.setStatus(1); // 设置为已读
+                baseMapper.updateById(message);
+            }
+        }
+        //新建会话浏览UserAction
+
         return messages;
     }
 

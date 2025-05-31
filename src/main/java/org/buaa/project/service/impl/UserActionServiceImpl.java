@@ -142,4 +142,10 @@ public class UserActionServiceImpl extends ServiceImpl<UserActionMapper, UserAct
         userAction.setRecommendStat(1);
         baseMapper.updateById(userAction);
     }
-}
+
+    @Override
+    @Transactional
+    public void browse(Long userId,Long conversationId) {
+        UserActionDO userActionDO = getUserAction(userId, EntityTypeEnum.CONVERSATION, conversationId);
+    }
+ }

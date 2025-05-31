@@ -29,7 +29,10 @@ public interface MessageService extends IService<MessageDO> {
      * 根据发送者和接收者id查询消息列表
      */
     public List<MessageDO> getMessagesBySenderAndReceiver(Long senderId, Long receiverId,Long conversationId);
-
+    /**
+     * 根据会话id查询消息列表
+     */
+    public List<MessageDO> getMessagesByConvId(Long conversationId);
     /**
      * 添加消息
      */
