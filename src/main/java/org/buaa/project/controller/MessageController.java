@@ -53,6 +53,14 @@ public class MessageController {
     }
 
     /**
+     * 根据会话ID获取消息列表
+     */
+    @GetMapping("/api/hangzd/messages/conv/{convId}")
+    public Result<List<MessageDO>> getMessagesByConvId(@PathVariable Long convId) {
+        return Results.success(messageService.getMessagesByConvId(convId));
+    }
+
+    /**
      * 添加消息
      */
     @PostMapping("/api/hangzd/message")
@@ -95,5 +103,7 @@ public class MessageController {
         messageService.readMessage(id);
         return Results.success();
     }
+
+
 
 }

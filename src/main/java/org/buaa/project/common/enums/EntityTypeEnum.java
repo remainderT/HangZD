@@ -14,7 +14,9 @@ public enum EntityTypeEnum {
 
     ANSWER("answer"),
 
-    USER("user");
+    USER("user"),
+
+    CONVERSATION("conversation"),;
 
     private final String type;
 

@@ -107,7 +107,7 @@ DROP TABLE IF EXISTS `user_action`;
 CREATE TABLE `user_action` (
                         `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
                         `user_id` bigint(20)  unsigned NOT NULL DEFAULT '0' COMMENT '用户ID',
-                        `entity_type` ENUM('user', 'question', 'answer') NOT NULL  COMMENT '实体类型',
+                        `entity_type` ENUM('user', 'question', 'answer', 'conversation') NOT NULL  COMMENT '实体类型',
                         `entity_id` bigint(20)  unsigned NOT NULL DEFAULT '0' COMMENT '实体ID',
                         `collect_stat` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '收藏状态: 0-未收藏，1-已收藏',
                         `like_stat` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '点赞状态: 0-未点赞，1-点赞',

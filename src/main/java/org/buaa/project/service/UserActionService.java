@@ -24,5 +24,9 @@ public interface UserActionService extends IService<UserActionDO> {
      * 用户行为： 推荐问题
      */
     void recommendQuestion(Long questionId, Long userId);
+    /**
+     * 用户行为： 更新浏览记录
+     */
+    void browse(Long userId,Long conversationId);
 
 } 
