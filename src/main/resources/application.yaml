@@ -63,7 +63,7 @@ mybatis-plus:
 
 elasticsearch:
   host: nurl.top
-  index-name: conversation
+  index-name: public_conversation
 
 
 

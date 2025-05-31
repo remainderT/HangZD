@@ -12,6 +12,8 @@ import org.buaa.project.dao.entity.UserDO;
 import org.buaa.project.dao.mapper.ConversationMapper;
 import org.buaa.project.dao.mapper.UserMapper;
 import org.buaa.project.dto.req.conversation.ConversationCreateReqDTO;
+import org.buaa.project.dto.req.conversation.ConversationPageReqDTO;
+import org.buaa.project.dto.resp.ConversationAllRespDTO;
 import org.buaa.project.service.ConversationService;
 import org.buaa.project.service.EsService;
 import org.springframework.stereotype.Service;
@@ -235,14 +237,8 @@ public class ConversationServiceImpl extends ServiceImpl<ConversationMapper, Con
         baseMapper.updateById(conversation);
     }
 
-    public List<ConversationDO> getPublicConversations() {
-        // todo  ES 查询
-        LambdaQueryWrapper<ConversationDO> queryWrapper = Wrappers.lambdaQuery(ConversationDO.class)
-                .eq(ConversationDO::getDelFlag, 0)
-                .eq(ConversationDO::getStatus, 2) // 仅获取已公开的会话
-                .orderByDesc(ConversationDO::getUpdateTime);
-        List<ConversationDO> list = baseMapper.selectList(queryWrapper);
-        return list;
+    public ConversationAllRespDTO getPublicConversations(ConversationPageReqDTO requestParam) {
+        return esService.search(requestParam);
     }
 
 } 

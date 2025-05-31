@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import org.buaa.project.common.convention.result.Result;
 import org.buaa.project.dao.entity.ConversationDO;
 import org.buaa.project.dto.req.conversation.ConversationCreateReqDTO;
+import org.buaa.project.dto.req.conversation.ConversationPageReqDTO;
+import org.buaa.project.dto.resp.ConversationAllRespDTO;
 
 import java.util.List;
 
@@ -40,5 +42,5 @@ public interface ConversationService extends IService<ConversationDO> {
     /**
      * 获取所有已公开会话
      */
-    public List<ConversationDO> getPublicConversations();
+    public ConversationAllRespDTO getPublicConversations(ConversationPageReqDTO requestParam);
 } 

@@ -5,6 +5,8 @@ import org.buaa.project.common.convention.result.Result;
 import org.buaa.project.common.convention.result.Results;
 import org.buaa.project.dao.entity.ConversationDO;
 import org.buaa.project.dto.req.conversation.ConversationCreateReqDTO;
+import org.buaa.project.dto.req.conversation.ConversationPageReqDTO;
+import org.buaa.project.dto.resp.ConversationAllRespDTO;
 import org.buaa.project.service.ConversationService;
 import org.springframework.web.bind.annotation.*;
 
@@ -68,8 +70,7 @@ public class ConversationController {
      * 获取所有已公开会话
      */
     @GetMapping("/api/hangzd/conversations/public")
-    public Result<List<ConversationDO>> getPublicConversations() {
-        List<ConversationDO> publicConversations = conversationService.getPublicConversations();
-        return Results.success(publicConversations);
+    public Result<ConversationAllRespDTO> getPublicConversations(ConversationPageReqDTO requestParam) {
+        return Results.success(conversationService.getPublicConversations(requestParam));
     }
 }
