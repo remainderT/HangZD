@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 @SpringBootApplication
 @MapperScan("org.buaa.project.dao.mapper")
-@ComponentScan("org.buaa.project.common.websocket")
+//@ComponentScan("org.buaa.project.websocket")
 public class ProjectApplication {
 
     public static void main(String[] args) {

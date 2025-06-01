@@ -1,13 +1,13 @@
 package org.buaa.project.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.buaa.project.common.biz.user.UserContext;
 import org.buaa.project.common.convention.exception.ServiceException;
+import org.buaa.project.websocket.WebSocketHandler;
 import org.buaa.project.dao.entity.ConversationDO;
 import org.buaa.project.dao.entity.MessageDO;
 import org.buaa.project.dao.entity.UserDO;
@@ -36,6 +36,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageDO> im
     //private final UserService userService;
     private final UserMapper userMapper;
     private final ConversationMapper conversationMapper;
+    private final WebSocketHandler webSocketHandler;
 
     public boolean existsMessage(Long id) {
         MessageDO message = baseMapper.selectById(id);
@@ -122,7 +123,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageDO> im
     }
 
     @Override
-    public void addMessage(MessageUploadReqDTO requestParam) {
+    public void addMessage(MessageUploadReqDTO requestParam) throws Exception {
         checkMessageValid(requestParam);
         MessageDO message = BeanUtil.toBean(requestParam, MessageDO.class);
         message.setFromId(requestParam.getFromId());
@@ -133,6 +134,8 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageDO> im
         //message.setCreateTime();
         message.setGenerateId(0L);
         baseMapper.insert(message);
+
+        webSocketHandler.send(message);
     }
 
     @Override

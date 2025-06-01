@@ -1,4 +1,4 @@
-package org.buaa.project.common.websocket;
+package org.buaa.project.websocket;
 
 import com.alibaba.fastjson2.JSON;
 import org.buaa.project.dao.entity.MessageDO;
@@ -24,7 +24,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
         session.sendMessage(new TextMessage("连接成功"));
     }
 
-    protected void send(MessageDO message) throws Exception {
+    public void send(MessageDO message) throws Exception {
         Long toId = message.getToId();
         WebSocketSession toSession = userSessions.get(toId);
 

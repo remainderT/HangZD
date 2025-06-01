@@ -64,7 +64,7 @@ public class MessageController {
      * 添加消息
      */
     @PostMapping("/api/hangzd/message")
-    public Result<Void> addMessage(@RequestBody MessageUploadReqDTO message) {
+    public Result<Void> addMessage(@RequestBody MessageUploadReqDTO message) throws Exception {
         messageService.addMessage(message);
         return Results.success();
     }

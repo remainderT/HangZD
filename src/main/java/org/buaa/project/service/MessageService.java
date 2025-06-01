@@ -36,7 +36,7 @@ public interface MessageService extends IService<MessageDO> {
     /**
      * 添加消息
      */
-    public void addMessage(MessageUploadReqDTO requestParam);
+    public void addMessage(MessageUploadReqDTO requestParam) throws Exception;
     /**
      * 更新消息
      */

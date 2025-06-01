@@ -1,5 +1,6 @@
-package org.buaa.project.common.websocket;
+package org.buaa.project.websocket;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.*;
 
@@ -7,15 +8,12 @@ import org.springframework.web.socket.config.annotation.*;
 @EnableWebSocket
 public class WebSocketConfig implements WebSocketConfigurer {
 
-    private final WebSocketHandler webSocketHandler;
-
-    public WebSocketConfig(WebSocketHandler webSocketHandler) {
-        this.webSocketHandler = webSocketHandler;
-    }
+    @Autowired
+    private WebSocketHandler webSocketHandler;
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(webSocketHandler, "/ws")
-                .setAllowedOrigins("*"); // 允许跨域
+                .setAllowedOrigins("*");
     }
 }
