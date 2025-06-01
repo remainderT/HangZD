@@ -353,4 +353,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
         return defaultPublic;
     }
 
+    @Override
+    public Integer getDefaultPublic(){
+        Long userId = UserContext.getUserId();
+        UserDO userDO = baseMapper.selectById(userId);
+        return userDO.getDefaultPublic();
+    }
+
 }

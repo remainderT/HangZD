@@ -83,4 +83,9 @@ public interface UserService extends IService<UserDO> {
      * 改变用户的默认公开状态
      */
     Integer alterDefaultPublic();
+
+    /**
+     * 获取用户的默认公开状态
+     */
+    Integer getDefaultPublic();
 }

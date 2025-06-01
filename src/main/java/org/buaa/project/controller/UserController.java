@@ -142,5 +142,14 @@ public class UserController {
         return Results.success(newState);
     }
 
+    /**
+     * 获取当前用户的默认公开状态
+     */
+    @GetMapping("/api/hangzd/user/default-public")
+    public Result<Integer> getDefaultPublic() {
+        Integer defaultPublic = userService.getDefaultPublic();
+        return Results.success(defaultPublic);
+    }
+
 }
 
