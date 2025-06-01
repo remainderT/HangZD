@@ -7,15 +7,15 @@ import org.springframework.web.socket.config.annotation.*;
 @EnableWebSocket
 public class WebSocketConfig implements WebSocketConfigurer {
 
-    private final MyWebSocketHandler myWebSocketHandler;
+    private final WebSocketHandler webSocketHandler;
 
-    public WebSocketConfig(MyWebSocketHandler myWebSocketHandler) {
-        this.myWebSocketHandler = myWebSocketHandler;
+    public WebSocketConfig(WebSocketHandler webSocketHandler) {
+        this.webSocketHandler = webSocketHandler;
     }
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(myWebSocketHandler, "/ws")
+        registry.addHandler(webSocketHandler, "/ws")
                 .setAllowedOrigins("*"); // 允许跨域
     }
 }
