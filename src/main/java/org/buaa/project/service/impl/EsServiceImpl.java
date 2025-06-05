@@ -66,7 +66,6 @@ public class EsServiceImpl implements EsService {
                 .build();
         List<String> suggestion = analyze(questionDO.getTitle());
         conversationDOC.setSuggestion(suggestion);
-        conversationDOC.setId(questionDO.getId());
         try {
             IndexRequest indexRequest= new IndexRequest(INDEX_NAME).id(questionDO.getId().toString());
             indexRequest.source(JSON.toJSONString(conversationDOC), XContentType.JSON);
