@@ -99,9 +99,9 @@ public class UserActionServiceImpl extends ServiceImpl<UserActionMapper, UserAct
                         conversationMapper.updateById(conversation);
                         redisCount.hIncr(ANSWER_COUNT_KEY + entityId, "like", isPositive ? 1 : -1);
                         if (isPositive) {
-                            stringRedisTemplate.opsForSet().add(ANSWER_LIKE_SET_KEY + entityId, userId.toString());
+                            stringRedisTemplate.opsForSet().add(CONVERSATION_LIKE_SET_KEY + entityId, userId.toString());
                         } else {
-                            stringRedisTemplate.opsForSet().remove(ANSWER_LIKE_SET_KEY + entityId, userId.toString());
+                            stringRedisTemplate.opsForSet().remove(CONVERSATION_LIKE_SET_KEY + entityId, userId.toString());
                         }
                         entityUserId = conversation.getUser2();
                     }

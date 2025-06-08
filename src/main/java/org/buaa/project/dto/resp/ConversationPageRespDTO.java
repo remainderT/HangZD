@@ -26,6 +26,16 @@ public class ConversationPageRespDTO {
     private String content;
 
     /**
+     * 点赞状态
+     */
+    private String likeStatus;
+
+    /**
+     * 点赞数量
+     */
+    private Integer likeCount;
+
+    /**
      * 日期
      */
     private Date createTime;

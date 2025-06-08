@@ -16,7 +16,10 @@ import org.buaa.project.dto.req.conversation.ConversationPageReqDTO;
 import org.buaa.project.dto.resp.ConversationAllRespDTO;
 import org.buaa.project.service.ConversationService;
 import org.buaa.project.service.EsService;
+import org.buaa.project.service.UserActionService;
 import org.springframework.stereotype.Service;
+import org.buaa.project.common.enums.EntityTypeEnum;
+import org.buaa.project.common.enums.UserActionTypeEnum;
 
 import java.util.List;
 import java.util.Objects;
@@ -33,6 +36,8 @@ public class ConversationServiceImpl extends ServiceImpl<ConversationMapper, Con
     private final UserMapper userMapper;
 
     private final EsService esService;
+
+    private final UserActionService userActionService;
 
     /**
      * 检查指定问题的会话是否存在
@@ -248,6 +253,14 @@ public class ConversationServiceImpl extends ServiceImpl<ConversationMapper, Con
         }
         ConversationDO conversation = baseMapper.selectById(id);
         return conversation.getStatus();
+    }
+
+    @Override
+    public void likeConversation(Long id) {
+        if (!existsConversation(id)) {
+            throw new ServiceException(CONVERSATION_NOT_FOUND);
+        }
+        userActionService.collectAndLike(EntityTypeEnum.CONVERSATION, id, UserActionTypeEnum.LIKE);
     }
 
 } 

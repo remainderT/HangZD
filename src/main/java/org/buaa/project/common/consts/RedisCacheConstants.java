@@ -71,9 +71,9 @@ public class RedisCacheConstants {
     public static final String QUESTION_COLLECT_SET_KEY = "hangzd:question:collect:";
 
     /**
-     * 回答点赞集合
+     * 会话点赞集合
      */
-    public static final String ANSWER_LIKE_SET_KEY = "hangzd:answer:like:";
+    public static final String CONVERSATION_LIKE_SET_KEY = "hangzd:conversation:like:";
 
     /**
      * 用户统计信息缓存标识

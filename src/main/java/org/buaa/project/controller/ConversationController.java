@@ -81,4 +81,14 @@ public class ConversationController {
     public Result<Integer> getConversationStatus(@PathVariable Long id) {
         return Results.success(conversationService.getConversationStatus(id));
     }
+
+    /**
+     * 点赞会话
+     */
+    @PostMapping("/api/hangzd/conversation/{id}/like")
+    public Result<Void> likeConversation(@PathVariable Long id) {
+        conversationService.likeConversation(id);
+        return Results.success();
+    }
+    
 }

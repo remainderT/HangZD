@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+
+import org.buaa.project.common.biz.user.UserContext;
 import org.buaa.project.dao.entity.ConversationDO;
 import org.buaa.project.dao.entity.ConversationDOC;
 import org.buaa.project.dao.entity.QuestionDO;
@@ -15,6 +17,7 @@ import org.buaa.project.dto.req.conversation.ConversationPageReqDTO;
 import org.buaa.project.dto.resp.ConversationAllRespDTO;
 import org.buaa.project.dto.resp.ConversationPageRespDTO;
 import org.buaa.project.service.EsService;
+import org.buaa.project.toolkit.RedisCount;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -34,10 +37,14 @@ import org.elasticsearch.search.suggest.completion.CompletionSuggestion;
 import org.elasticsearch.xcontent.XContentType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.data.redis.core.StringRedisTemplate;
+
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import static org.buaa.project.common.consts.RedisCacheConstants.CONVERSATION_LIKE_SET_KEY;
 
 
 /**
@@ -51,6 +58,10 @@ public class EsServiceImpl implements EsService {
     private final RestHighLevelClient client;
 
     private final QuestionMapper questionMapper;
+
+    private final StringRedisTemplate stringRedisTemplate;
+
+    private final RedisCount redisCount;
 
     @Value("${elasticsearch.index-name}")
     private String INDEX_NAME;
@@ -133,6 +144,11 @@ public class EsServiceImpl implements EsService {
                     conversation.setContent(content);
                 }
             }
+            Long id = conversation.getId();
+            String likeStatus = Boolean.TRUE.equals(stringRedisTemplate.opsForSet().isMember(CONVERSATION_LIKE_SET_KEY + id, UserContext.getUserId())) ?   "已点赞" : "未点赞";
+            conversation.setLikeStatus(likeStatus);
+;
+            conversation.setLikeCount(redisCount.hGet(CONVERSATION_LIKE_SET_KEY + id, "like"));
 
             conversationPageRespDTOS.add(conversation);
         });
