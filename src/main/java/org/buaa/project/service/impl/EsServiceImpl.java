@@ -61,8 +61,6 @@ public class EsServiceImpl implements EsService {
 
     private final StringRedisTemplate stringRedisTemplate;
 
-    private final RedisCount redisCount;
-
     @Value("${elasticsearch.index-name}")
     private String INDEX_NAME;
 
@@ -145,10 +143,10 @@ public class EsServiceImpl implements EsService {
                 }
             }
             Long id = conversation.getId();
-            String likeStatus = Boolean.TRUE.equals(stringRedisTemplate.opsForSet().isMember(CONVERSATION_LIKE_SET_KEY + id, UserContext.getUserId())) ?   "已点赞" : "未点赞";
+            String likeStatus = Boolean.TRUE.equals(stringRedisTemplate.opsForSet().isMember(CONVERSATION_LIKE_SET_KEY + id, String.valueOf(UserContext.getUserId()))) ?   "已点赞" : "未点赞";
             conversation.setLikeStatus(likeStatus);
-;
-            conversation.setLikeCount(redisCount.hGet(CONVERSATION_LIKE_SET_KEY + id, "like"));
+            Long count = stringRedisTemplate.opsForSet().size(CONVERSATION_LIKE_SET_KEY + id);
+            conversation.setLikeCount(count == null ? 0 : count.intValue());
 
             conversationPageRespDTOS.add(conversation);
         });
