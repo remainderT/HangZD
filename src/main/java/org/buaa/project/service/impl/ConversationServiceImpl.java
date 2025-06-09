@@ -20,6 +20,7 @@ import org.buaa.project.service.UserActionService;
 import org.springframework.stereotype.Service;
 import org.buaa.project.common.enums.EntityTypeEnum;
 import org.buaa.project.common.enums.UserActionTypeEnum;
+import static org.buaa.project.common.enums.UserErrorCodeEnum.*;
 
 import java.util.List;
 import java.util.Objects;
@@ -235,6 +236,15 @@ public class ConversationServiceImpl extends ServiceImpl<ConversationMapper, Con
         }
         if (conversation.getStatus() != 0) {
             throw new ServiceException(CONVERSATION_STATE_ERROR);
+        }
+
+        //给回答者的useful_count+1
+        UserDO user2 = userMapper.selectById(conversation.getUser2());
+        if (user2 != null) {
+            user2.setUsefulCount(user2.getUsefulCount() + 1);
+            userMapper.updateById(user2);
+        } else {
+            throw new ServiceException(USER_NULL);
         }
 
         // 更新会话状态为结束
